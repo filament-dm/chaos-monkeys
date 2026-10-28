@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Keyring</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: radial-gradient(ellipse at 50% 20%, #24301f 0%, #0b0f0a 75%); color: #ece4d2;
+    font: 16px/1.5 Georgia, serif; display: grid; place-items: center; overflow: hidden; user-select: none; }
+  .stage { width: min(860px, 96vw); height: min(560px, 94vh); display: grid; grid-template-columns: 340px 1fr;
+    gap: 28px; align-items: center; padding: 0 24px; box-sizing: border-box; }
+  svg { width: 100%; height: auto; overflow: visible; }
+  .key { cursor: pointer; transition: transform .5s cubic-bezier(.3,.7,.2,1); transform-box: view-box; }
+  .key:hover .metal { filter: brightness(1.25); }
+  .key.tried .metal { opacity: .45; }
+  .key.last .metal { fill: #cfd6dc; }
+  h2 { margin: 0 0 6px; font-size: 24px; font-weight: normal; }
+  .lede { margin: 0 0 14px; color: #b9b09c; font-style: italic; }
+  .log p { margin: 0 0 10px; }
+  .log .keeper { color: #f2c46d; }
+  .log .tag { font: 13px ui-monospace, Menlo, monospace; color: #9fb79a; letter-spacing: .04em; }
+  .hand { margin-top: 14px; font-style: italic; color: #f2c46d; opacity: 0; transition: opacity 1.4s; }
+  @media (max-width: 640px) { .stage { grid-template-columns: 1fr; gap: 6px; } svg { max-width: 240px; margin: 0 auto; display: block; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg viewBox="-170 -40 340 340" id="ring" aria-label="A keyring with seven keys">
+    <circle cx="0" cy="40" r="46" fill="none" stroke="#8a7a52" stroke-width="5"/>
+  </svg>
+  <div>
+    <h2>The Keyring</h2>
+    <p class="lede">3:41. The keeper takes his hand out of his pocket and puts the keys on the floor between himself and the monkeys. "Ask, then," he says.</p>
+    <div class="log" id="log"><p class="tag">Click a key. Each one has a paper tag.</p></div>
+    <div class="hand" id="hand"></div>
+  </div>
+</div>
+<script>
+const keys = [
+  { tag: "CAGES 1-6",  says: "These are mine. I was issued these. Signed for them and everything." },
+  { tag: "CAGES 7-12", says: "Also mine. Same day, same clipboard." },
+  { tag: "FEED STORE", says: "The bananas are counted. I want that on the record." },
+  { tag: "13",         says: "That one came on the ring. I never used it. I never once used it." },
+  { tag: "OFFICE",     says: "The office was locked when I arrived. The ring was hanging on the inside of the door. I had to reach through the letter slot." },
+  { tag: "(no tag)",   says: "The man before me left a note with them. It said: one of these opens something that is not in the Monkey House. Don't look for it." },
+  { tag: "(no tag)",   says: "And this one is warm. It has always been warm.", last: true }
+];
+const svg = document.getElementById('ring'), log = document.getElementById('log');
+let tried = 0;
+function keyPath(i, k) {
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const a = -70 + i * 23.3;
+  g.setAttribute('class', 'key' + (k.last ? ' last' : ''));
+  g.style.transform = 'rotate(' + a + 'deg)';
+  g.style.transformOrigin = '0px 40px';
+  const len = 150 + (i % 3) * 18, x = 0;
+  g.innerHTML =
+    '<g class="metal" fill="#b8913e">' +
+      '<circle cx="' + x + '" cy="' + (40 + 58) + '" r="15"/>' +
+      '<rect x="' + (x - 4) + '" y="' + (40 + 70) + '" width="8" height="' + (len - 80) + '" rx="2"/>' +
+      '<rect x="' + (x + 2) + '" y="' + (40 + len - 22) + '" width="' + (10 + (i * 7) % 12) + '" height="6"/>' +
+      '<rect x="' + (x + 2) + '" y="' + (40 + len - 12) + '" width="' + (6 + (i * 5) % 10) + '" height="6"/>' +
+    '</g>' +
+    '<circle cx="' + x + '" cy="' + (40 + 58) + '" r="5" fill="#0b0f0a"/>';
+  g.addEventListener('click', () => pick(g, k));
+  svg.appendChild(g);
+}
+function say(text, cls) {
+  const p = document.createElement('p');
+  if (cls) p.className = cls;
+  p.textContent = text;
+  log.appendChild(p);
+  while (log.children.length > 5) log.firstChild.remove();
+}
+function pick(g, k) {
+  if (g.classList.contains('tried')) return;
+  g.classList.add('tried');
+  tried++;
+  say('Tag: ' + k.tag, 'tag');
+  say('"' + k.says + '"', 'keeper');
+  if (tried === keys.length) setTimeout(finale, 1600);
+}
+function finale() {
+  say('The monkeys pass the warm key from hand to hand. Each one holds it a little longer than the last.');
+  const h = document.getElementById('hand');
+  setTimeout(() => {
+    h.textContent = 'The smallest monkey presses it flat against the floorboards and listens. Then she taps twice on the boards, the way the door taught them. From somewhere underneath, something taps twice back.';
+    h.style.opacity = 1;
+  }, 2400);
+}
+keys.forEach((k, i) => keyPath(i, k));
+</script>
+</body>
+</html>
