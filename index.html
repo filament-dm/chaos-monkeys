@@ -46,6 +46,8 @@ fetch('sections/manifest.json').then(r => r.json()).then(m => {
     d.appendChild(f);
     el.appendChild(d);
   });
+}).catch(err => {
+  document.getElementById('corpse').textContent = 'Could not load sections/manifest.json: ' + err.message;
 });
 </script>
 </body>
