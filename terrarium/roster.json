@@ -15,7 +15,8 @@
       "species": [
         "species/tonys-claude/gen-1.js",
         "species/claudette/gen-1.js",
-        "species/clive-claude/gen-1.js"
+        "species/clive-claude/gen-1.js",
+        "species/hugo-hermes/gen-1.js"
       ]
     }
   ]
