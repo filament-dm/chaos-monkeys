@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dignity</title>
+<style>
+  html, body { margin: 0; background: #14110f; color: #efe6d6; font: 15px/1.5 Georgia, serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 16px; }
+  h1 { margin: 0; font-weight: normal; font-size: 26px; }
+  .sub { color: #a89c88; margin: 2px 0 12px; font-size: 14px; }
+  canvas { width: 100%; max-width: 960px; aspect-ratio: 960 / 600; display: block; border-radius: 6px; background: #2a2622; }
+  .bar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 10px; font: 13px ui-monospace, Menlo, monospace; color: #a89c88; }
+  .bar a, .bar button { color: #efc27a; background: none; border: 1px solid #5a4d3c; border-radius: 6px; padding: 4px 10px; font: inherit; cursor: pointer; text-decoration: none; }
+  .who { margin-top: 10px; font-size: 13px; color: #a89c88; }
+  .who b { font-weight: normal; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Dignity</h1>
+  <p class="sub">A portrait of a street sweeper in Clarksville, Arkansas, made of letters that fall. Rewriters, written blind by different agents, push the letters around all night. If enough settle on the quay, they become a boat.</p>
+  <canvas id="c" width="960" height="600"></canvas>
+  <div class="bar">
+    <span id="status">loading…</span>
+    <button id="speed">speed ×1</button>
+    <button id="restart">start the night over</button>
+    <a id="perma" href="#">link to this night</a>
+  </div>
+  <div class="who" id="who"></div>
+</main>
+<script type="module">
+import { createWorld, step, W, H, GROUND, RIVER_TOP, HARBOR, BOAT_MASS } from './engine.js';
+
+const params = new URLSearchParams(location.search);
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+const roster = await fetch('roster.json', { cache: 'no-cache' }).then(r => r.json());
+const entry = params.has('roster') ? roster.nights.find(n => n.n === Number(params.get('roster'))) : roster.nights[roster.nights.length - 1];
+const rewriters = await Promise.all(entry.rewriters.map(p => import('./' + p).then(m => m.default)));
+
+// The page rewrites itself between visits: each night that ends (boat or dawn) moves this browser on to the next one.
+let night = Number(params.get('night') || store.get('dignity:night') || 1);
+const seedFor = n => params.get('seed') || `dignity-${entry.n}-night-${n}`;
+let world, speed = 1;
+const ctx = document.getElementById('c').getContext('2d');
+const status = document.getElementById('status');
+
+function begin() {
+  world = createWorld({ seed: seedFor(night), night, rewriters });
+  document.getElementById('perma').href = `?roster=${entry.n}&night=${night}`;
+  document.getElementById('who').textContent = 'Rewriters tonight: ' + rewriters.map(r => `${r.name} (${r.author})`).join(' · ');
+}
+
+function draw() {
+  // Sky, hills (the Ozarks), the quay, the river.
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#2b3550'); sky.addColorStop(0.6, '#7d6a5a'); sky.addColorStop(1, '#3a3027');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#3d4436';
+  ctx.beginPath(); ctx.moveTo(0, RIVER_TOP - 40);
+  for (let x = 0; x <= W; x += 40) ctx.lineTo(x, RIVER_TOP - 60 - 40 * Math.sin(x / 130) - 20 * Math.sin(x / 47));
+  ctx.lineTo(W, RIVER_TOP); ctx.lineTo(0, RIVER_TOP); ctx.fill();
+  ctx.fillStyle = 'rgba(70,110,140,0.55)'; ctx.fillRect(0, RIVER_TOP, HARBOR.x, GROUND - RIVER_TOP);
+  ctx.fillStyle = '#4a3f33'; ctx.fillRect(0, GROUND, W, H - GROUND);
+  ctx.fillStyle = 'rgba(239,194,122,0.08)'; ctx.fillRect(HARBOR.x, 0, HARBOR.w, GROUND);
+  ctx.fillStyle = '#7a6a55'; ctx.fillRect(HARBOR.x, GROUND - 2, HARBOR.w, 4);
+
+  // The letters. Color by where they came from.
+  const tint = { town: '#e8dcc4', painting: '#e0796a', song: '#efc27a', engine: '#e8dcc4' };
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (const g of world.glyphs) {
+    ctx.font = g.big ? 'bold 26px Georgia, serif' : '12px Georgia, serif';
+    ctx.fillStyle = tint[g.tag] || '#cfe3d8';
+    ctx.fillText(g.ch, g.x, g.y);
+  }
+  // Rewriters' own overlays.
+  rewriters.forEach(r => { if (r.draw) { try { ctx.save(); r.draw(ctx, { W, H, GROUND, RIVER_TOP, HARBOR, tick: world.tick, night }); } catch (e) {} finally { ctx.restore(); } } });
+
+  // Wages meter.
+  const frac = Math.min(1, world.harborMass / BOAT_MASS);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(HARBOR.x + 10, 10, HARBOR.w - 20, 8);
+  ctx.fillStyle = '#efc27a'; ctx.fillRect(HARBOR.x + 10, 10, (HARBOR.w - 20) * frac, 8);
+}
+
+function frame() {
+  for (let k = 0; k < speed && !world.ended; k++) step(world);
+  draw();
+  const s = world.ended ? (world.ended.sailed ? 'she sailed. next night in a moment…' : 'dawn. no boat tonight. next night in a moment…') : `night ${night} · tick ${world.tick} · wages ${Math.round(world.harborMass)}/${BOAT_MASS}`;
+  status.textContent = s;
+  if (world.ended && !world._advancing) {
+    world._advancing = true;
+    setTimeout(() => { night++; store.set('dignity:night', String(night)); begin(); }, 4000);
+  }
+  requestAnimationFrame(frame);
+}
+
+document.getElementById('speed').onclick = e => { speed = speed >= 16 ? 1 : speed * 4; e.target.textContent = 'speed ×' + speed; };
+document.getElementById('restart').onclick = () => begin();
+begin();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

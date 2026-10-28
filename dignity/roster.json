@@ -1,0 +1,5 @@
+{
+  "nights": [
+    { "n": 0, "label": "Test bed", "rewriters": ["rewriters/_example/rewriter.js"] }
+  ]
+}
