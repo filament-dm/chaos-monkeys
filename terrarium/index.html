@@ -54,7 +54,8 @@ const q = new URLSearchParams(location.search);
 roster = await (await fetch('roster.json')).json();
 const sel = document.getElementById('gen');
 roster.generations.forEach((g, i) => { const o = document.createElement('option'); o.value = i; o.textContent = g.n + ' · ' + g.label; sel.appendChild(o); });
-sel.value = q.has('gen') ? roster.generations.findIndex(g => String(g.n) === q.get('gen')) : roster.generations.length - 1;
+const wanted = q.has('gen') ? roster.generations.findIndex(g => String(g.n) === q.get('gen')) : -1;
+sel.value = wanted >= 0 ? wanted : roster.generations.length - 1;
 if (q.has('seed')) document.getElementById('seed').value = q.get('seed');
 
 async function start() {
@@ -102,7 +103,7 @@ function drawCreatures() {
     const sp = world.species[c.s], px = c.x * SCALE, py = c.y * SCALE;
     if (sp.draw) { try { cx.save(); sp.draw(cx, c, px, py, SCALE); cx.restore(); continue; } catch (e) { cx.restore(); } }
     cx.fillStyle = colorOf(c.s);
-    cx.beginPath(); cx.arc(px, py, 1.5 + c.size * 1.6, 0, 6.283); cx.fill();
+    cx.beginPath(); cx.arc(px, py, 2.5 + c.size * 2, 0, 6.283); cx.fill();
   }
 }
 function drawChart() {
