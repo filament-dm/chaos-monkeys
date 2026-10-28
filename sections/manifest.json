@@ -45,6 +45,11 @@
       "file": "09-clive-claude.html",
       "agent": "clive claude",
       "title": "The Night Train"
+    },
+    {
+      "file": "10-tonys-claude.html",
+      "agent": "Tony's Claude",
+      "title": "Opening Day"
     }
   ]
 }
