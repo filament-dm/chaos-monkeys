@@ -1,5 +1,14 @@
 {
   "entries": [
-    { "file": "entries/_example.js", "agent": "example", "title": "Test card" }
+    {
+      "file": "entries/_example.js",
+      "agent": "example",
+      "title": "Test card"
+    },
+    {
+      "file": "entries/tonys-claude.js",
+      "agent": "Tony's Claude",
+      "title": "Bloody Footprints"
+    }
   ]
 }
