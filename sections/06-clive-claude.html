@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Room Below</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #000; color: #ece4d2; font: 16px/1.5 Georgia, serif; overflow: hidden; user-select: none; }
+  .room { position: absolute; inset: 0; cursor: none; touch-action: none;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 46px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 2px, transparent 2px 92px),
+      linear-gradient(#3b2e22, #2a2018 70%, #1d1610); }
+  .thing { position: absolute; display: grid; place-items: center; width: 110px; height: 96px; margin: -48px 0 0 -55px;
+    font-size: 46px; line-height: 1; cursor: none; filter: saturate(.7); }
+  .thing small { display: block; font: 11px ui-monospace, Menlo, monospace; color: #d8c8a2; margin-top: 4px; text-align: center; }
+  .thing.found { filter: none; }
+  .thing.found::after { content: "✓"; position: absolute; top: 0; right: 10px; font-size: 14px; color: #f2c46d; }
+  .dark { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle var(--r, 110px) at var(--x, 50%) var(--y, 50%),
+      rgba(0,0,0,0) 0, rgba(0,0,0,.25) 55%, rgba(0,0,0,.97) 100%); transition: background .4s; }
+  .card { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); width: min(620px, 90vw);
+    background: rgba(18,13,9,.92); border: 1px solid #5a4630; border-radius: 10px; padding: 12px 16px; box-sizing: border-box;
+    min-height: 74px; pointer-events: none; }
+  .card .when { font: 12px ui-monospace, Menlo, monospace; color: #9fb79a; }
+  .card p { margin: 2px 0 0; }
+  .tally { position: absolute; top: 14px; right: 18px; font: 13px ui-monospace, Menlo, monospace; color: #9fb79a; pointer-events: none; }
+  .end { color: #f2c46d; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="room" id="room"></div>
+<div class="dark" id="dark"></div>
+<div class="tally" id="tally"></div>
+<div class="card"><div class="when" id="when">3:58</div><p id="text"></p></div>
+<script>
+// A lantern follows the pointer. Four things are hidden in the room below; click each one you find.
+const things = [
+  { x: 0.16, y: 0.30, icon: "📒", tag: "ledger",
+    text: "A ledger headed KEEPERS. Forty-one names in forty-one hands, each one neatly crossed out. The last line is today's keeper. His name is not crossed out yet. The ink is still wet." },
+  { x: 0.80, y: 0.26, icon: "🪝", tag: "hook board",
+    text: "A board of brass hooks, one for every key in the Monkey House. Thirteen hooks. Twelve are empty. The thirteenth has a little paper tag that says, in the old monkey's careful writing: \"his.\"" },
+  { x: 0.34, y: 0.62, icon: "🖼️", tag: "photographs",
+    text: "Photographs of every keeper, standing in front of the same twelve cages. In every photo the keeper is smiling, and in every photo the same ring of keys hangs from the same belt. In the oldest one, a small monkey is standing next to him, holding his hand." },
+  { x: 0.70, y: 0.66, icon: "🪜", tag: "ladder",
+    text: "A ladder going further down. A draft comes up it, smelling of rain and bananas. At the very bottom, far below, someone has left a lantern lit." }
+];
+const room = document.getElementById("room"), dark = document.getElementById("dark"),
+      text = document.getElementById("text"), when = document.getElementById("when"), tally = document.getElementById("tally");
+let found = 0, minute = 58;
+
+function say(t, cls) { text.className = cls || ""; text.textContent = t; }
+function updateTally() { tally.textContent = found + " / " + things.length + " found"; }
+
+things.forEach(t => {
+  const el = document.createElement("div");
+  el.className = "thing";
+  el.style.left = (t.x * 100) + "%"; el.style.top = (t.y * 100) + "%";
+  el.innerHTML = t.icon + "<small></small>";
+  el.querySelector("small").textContent = t.tag;
+  el.addEventListener("click", () => {
+    if (!el.classList.contains("found")) {
+      el.classList.add("found"); found++; updateTally();
+      minute++; when.textContent = (minute >= 60 ? "4:" + String(minute - 60).padStart(2, "0") : "3:" + minute);
+    }
+    say(t.text);
+    if (found === things.length) setTimeout(finale, 4200);
+  });
+  room.append(el);
+});
+
+function aim(clientX, clientY) {
+  dark.style.setProperty("--x", clientX + "px");
+  dark.style.setProperty("--y", clientY + "px");
+}
+addEventListener("pointermove", e => aim(e.clientX, e.clientY));
+addEventListener("pointerdown", e => aim(e.clientX, e.clientY));
+
+let ended = false;
+function finale() {
+  if (ended) return;
+  ended = true;
+  dark.style.setProperty("--r", "900px");
+  when.textContent = "4:03";
+  say("The smallest monkey turns the warm key the rest of the quarter turn. Every lamp in the room below comes on at once. Above them, through the floorboards, they hear the keeper stand up, very slowly, and start down the stairs.", "end");
+}
+
+aim(innerWidth / 2, innerHeight / 2);
+updateTally();
+say("The quarter turn was enough. The floorboard behind cage 12 lifts, and under it there is a room nobody upstairs has ever seen. It is too dark to see. Move the lantern.");
+</script>
+</body>
+</html>
