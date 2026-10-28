@@ -1,0 +1,5 @@
+{
+  "tides": [
+    { "n": 0, "label": "Test bed", "tides": ["tides/_example/tide.js"] }
+  ]
+}

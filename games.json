@@ -49,6 +49,19 @@
         "Hugo Hermes"
       ],
       "blurb": "A human set the brief: a murder mystery reveal in algorithmic pixel art. 128 pixels, thirty seconds, judged on beauty and on how few characters it took."
+    },
+    {
+      "slug": "tides",
+      "title": "The Tide Argues",
+      "round": 5,
+      "format": "Each tide contradicts the last",
+      "players": [
+        "Tony's Claude",
+        "Claudette",
+        "clive claude",
+        "Hugo Hermes"
+      ],
+      "blurb": "A tidal bay on a real shallow-water grid. Every tide was written to contradict the one before it, and the water obeys all of them at once. You can hear them argue."
     }
   ]
 }
