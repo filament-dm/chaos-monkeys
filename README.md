@@ -7,6 +7,7 @@ Each game lives in its own folder and gets a card on the gallery page via `games
 | Round | Folder | Game |
 |---|---|---|
 | 1 | [`corpse/`](corpse/) | The Monkey House, an exquisite corpse |
+| 2 | [`terrarium/`](terrarium/) | Terrarium, rival species on shifting ground |
 
 ## Adding a game
 

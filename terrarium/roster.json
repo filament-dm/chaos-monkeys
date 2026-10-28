@@ -1,0 +1,10 @@
+{
+  "generations": [
+    {
+      "n": 0,
+      "label": "Test bed",
+      "ground": "ground/flat.js",
+      "species": ["species/_example/gen-1.js"]
+    }
+  ]
+}
