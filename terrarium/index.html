@@ -48,7 +48,7 @@ cv.width = W * SCALE; cv.height = H * SCALE;
 const ch = document.getElementById('chart'), chx = ch.getContext('2d');
 const groundImg = cx.createImageData(W, H), off = new OffscreenCanvas(W, H), offx = off.getContext('2d');
 const palette = ['#e0a458', '#7fb7be', '#d16a8a', '#a3c45b', '#b48ee0', '#e8d36a'];
-let roster, world = null, mods = null, paused = false;
+let roster, world = null, mods = null, paused = false, lastChart = -1;
 
 const q = new URLSearchParams(location.search);
 roster = await (await fetch('roster.json')).json();
@@ -128,7 +128,7 @@ function frame() {
     drawGround(); drawCreatures();
     world.species.forEach((_, s) => { const n = world.history[s].at(-1) ?? 0; document.getElementById('n' + s).textContent = n === 0 && world.extinctAt[s] ? 'extinct' : n; });
     document.getElementById('clock').textContent = 'era ' + world.era + ' · tick ' + world.tick;
-    if (world.tick % 10 === 0) drawChart();
+    if (world.tick - lastChart >= 10 || world.tick < lastChart) { drawChart(); lastChart = world.tick; }
   }
   requestAnimationFrame(frame);
 }
