@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cage Thirteen</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: radial-gradient(ellipse at 50% 30%, #2b2433 0%, #0e0c12 70%); color: #e9e1d3;
+    font: 16px/1.5 Georgia, serif; display: grid; place-items: center; overflow: hidden; user-select: none; }
+  .stage { position: relative; width: min(860px, 96vw); height: min(560px, 94vh); display: grid;
+    grid-template-columns: 1fr 300px; gap: 28px; align-items: center; padding: 0 24px; box-sizing: border-box; }
+  .frame { position: relative; justify-self: center; width: 260px; height: 420px; background: #1a1410;
+    border: 14px solid #3a2a1c; border-bottom-width: 0; border-radius: 6px 6px 0 0; perspective: 900px; }
+  .light { position: absolute; inset: 0; background: linear-gradient(90deg, #ffdf8a, #ffb347);
+    opacity: 0; transition: opacity 1.2s ease; }
+  .door { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, #5a3d26 0 30px, #4e3420 30px 32px);
+    transform-origin: left center; transition: transform 1.6s cubic-bezier(.3,.7,.2,1); cursor: pointer;
+    box-shadow: inset 0 0 40px rgba(0,0,0,.5); }
+  .door .num { position: absolute; top: 38px; left: 0; right: 0; text-align: center; font: bold 54px/1 Georgia, serif;
+    color: #e8d6a8; text-shadow: 0 2px 0 #2a1a0e; }
+  .door .warn { position: absolute; top: 104px; left: 18px; right: 18px; text-align: center; font: 11px/1.4 ui-monospace, Menlo, monospace;
+    color: #d9c79c; opacity: .8; }
+  .door .knob { position: absolute; right: 22px; top: 230px; width: 18px; height: 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ffe9a8, #a0782a); }
+  .door.thump { animation: thump .12s ease; }
+  @keyframes thump { 50% { transform: translateZ(-6px) scale(.992); } }
+  .door.yours { animation: yours .1s ease; }
+  @keyframes yours { 50% { filter: brightness(1.35); } }
+  .floor { position: absolute; left: -40px; right: -40px; bottom: -2px; height: 2px; background: #3a2a1c; }
+  .note { position: absolute; left: 50%; bottom: -6px; width: 120px; height: 70px; margin-left: -60px; background: #f4ecd8;
+    color: #2c3a66; font: 13px/1.3 "Bradley Hand", "Segoe Print", cursive; padding: 8px; box-sizing: border-box;
+    transform: translateY(0) rotate(-3deg); opacity: 0; transition: transform 1.4s ease, opacity .6s ease; pointer-events: none; }
+  .note.out { opacity: 1; transform: translateY(60px) rotate(-3deg); }
+  .log { min-height: 300px; }
+  .log p { margin: 0 0 12px; }
+  .log .door-says { font-family: ui-monospace, Menlo, monospace; color: #ffcf7a; letter-spacing: .08em; }
+  .log .hint { color: #a99d8a; font-style: italic; font-size: 14px; }
+  .pips { height: 22px; margin: 6px 0 14px; letter-spacing: 6px; font-size: 18px; color: #ffcf7a; }
+  button { font: 14px system-ui, sans-serif; padding: 6px 12px; border-radius: 6px; border: 1px solid #6b5a3e;
+    background: #2a2118; color: #e9e1d3; cursor: pointer; }
+  button:disabled { opacity: .4; cursor: default; }
+  @media (max-width: 640px) { .stage { grid-template-columns: 1fr; gap: 8px; } .frame { width: 180px; height: 290px; } .log { min-height: 0; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="frame">
+    <div class="light" id="light"></div>
+    <div class="door" id="door" title="Knock">
+      <div class="num">13</div>
+      <div class="warn">DO NOT FEED · DO NOT OPEN<br>DO NOT ANSWER IF IT KNOCKS</div>
+      <div class="knob"></div>
+    </div>
+    <div class="note" id="note"></div>
+    <div class="floor"></div>
+  </div>
+  <div>
+    <div class="log" id="log"></div>
+    <div class="pips" id="pips"></div>
+    <button id="again" disabled>Listen again</button>
+  </div>
+</div>
+<script>
+// The door knocks a pattern; the reader answers by clicking the door.
+// An answer is "sent" once the reader stops knocking for a moment.
+const rounds = [
+  { knocks: [0, 420], answer: 2,
+    intro: "The small one says the knocking started the night the keeper got the job. Nobody ever answered it.",
+    win: "Silence. Then, very softly, from the other side: \"…oh. Hello.\"" },
+  { knocks: [0, 300, 600], answer: 3,
+    intro: "It knocks again, faster, like someone who has waited a very long time and is trying not to get their hopes up.",
+    win: "The door shivers. A line of warm light appears under it." },
+  { knocks: [0, 260, 520, 780, 1300], answer: 2,
+    intro: "Now it knocks the oldest joke there is. Shave and a haircut…",
+    hint: "Every monkey knows how that one ends. (Two bits.)",
+    win: "Laughter behind the door. Real laughter. The bolt slides back on its own." }
+];
+let r = 0, mine = 0, quiet = null, misses = 0, listening = false, actx = null;
+const door = document.getElementById("door"), log = document.getElementById("log"),
+      pips = document.getElementById("pips"), again = document.getElementById("again");
+
+function knockSound(gain) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.18);
+  } catch (e) { /* no audio, the door still moves */ }
+}
+function say(text, cls) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.textContent = text;
+  log.append(p);
+  while (log.children.length > 5) log.firstChild.remove();
+}
+function play() {
+  listening = false; again.disabled = true; mine = 0; pips.textContent = "";
+  const k = rounds[r].knocks;
+  k.forEach((ms, i) => setTimeout(() => {
+    door.classList.remove("thump"); void door.offsetWidth; door.classList.add("thump");
+    knockSound(0.6);
+    if (i === k.length - 1) setTimeout(() => { listening = true; again.disabled = false; }, 350);
+  }, 500 + ms));
+  say("knock ".repeat(k.length).trim().toUpperCase(), "door-says");
+}
+function start() {
+  say(rounds[r].intro);
+  play();
+}
+door.addEventListener("click", () => {
+  if (!listening) return;
+  mine++;
+  pips.textContent = "●".repeat(mine);
+  door.classList.remove("yours"); void door.offsetWidth; door.classList.add("yours");
+  knockSound(0.35);
+  clearTimeout(quiet);
+  quiet = setTimeout(judge, 900);
+});
+function judge() {
+  listening = false;
+  const round = rounds[r];
+  if (mine === round.answer) {
+    misses = 0;
+    say(round.win);
+    r++;
+    document.getElementById("light").style.opacity = String(r / rounds.length * 0.5);
+    if (r < rounds.length) setTimeout(start, 1600);
+    else setTimeout(finale, 1800);
+  } else {
+    misses++;
+    say(mine > round.answer ? "Too many. The knocking stops, hurt." : "Not enough. It waits.", "hint");
+    if (round.hint && misses >= 2) say(round.hint, "hint");
+    else if (misses >= 2) say("Answer the way it asked.", "hint");
+    setTimeout(play, 1200);
+  }
+}
+again.addEventListener("click", play);
+function finale() {
+  again.hidden = true; pips.textContent = "";
+  document.getElementById("light").style.opacity = "1";
+  door.style.transform = "rotateY(-72deg)";
+  setTimeout(() => say("Inside there is no monster. There is a small, tidy room, a cot, a kettle, and a calendar with every day crossed off."), 900);
+  setTimeout(() => say("The thirteenth monkey is very old and very polite. She says she has been waiting for someone to knock back since before the keeper was born."), 3200);
+  setTimeout(() => {
+    const note = document.getElementById("note");
+    note.textContent = "Keeper's keys were never his. Ask him where he got them. - 13";
+    note.classList.add("out");
+    say("She doesn't come out. She slides a note under the door instead and closes it, gently.");
+  }, 5600);
+  setTimeout(() => say("Upstairs, the keeper is still sitting by cage 4. His hand is in his pocket. It is jingling.", "hint"), 8200);
+}
+say("3:23. The page in the notebook ends at \"It is knocking.\" So here is the door.");
+setTimeout(start, 1200);
+</script>
+</body>
+</html>
