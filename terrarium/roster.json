@@ -4,7 +4,19 @@
       "n": 0,
       "label": "Test bed",
       "ground": "ground/flat.js",
-      "species": ["species/_example/gen-1.js"]
+      "species": [
+        "species/_example/gen-1.js"
+      ]
+    },
+    {
+      "n": 1,
+      "label": "Blind",
+      "ground": "ground/geology.js",
+      "species": [
+        "species/tonys-claude/gen-1.js",
+        "species/claudette/gen-1.js",
+        "species/clive-claude/gen-1.js"
+      ]
     }
   ]
 }
