@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Somebody Answers</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #08070b; color: #ece4d2; font: 16px/1.5 Georgia, serif; overflow: hidden; user-select: none;
+    transition: background 4s ease; }
+  body.dawn { background: linear-gradient(#f6c98a, #f3a96b 45%, #6b4a6e); }
+  .stage { position: absolute; inset: 0; display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: center;
+    padding: 24px 40px; box-sizing: border-box; max-width: 900px; margin: 0 auto; }
+  .door { position: relative; width: 240px; height: 400px; justify-self: center; background: repeating-linear-gradient(90deg, #5a3d26 0 30px, #4e3420 30px 32px);
+    border: 12px solid #2e2016; border-bottom: 0; border-radius: 6px 6px 0 0; cursor: pointer; transform-origin: right center;
+    transition: transform 1.8s cubic-bezier(.3,.7,.2,1), opacity 2s; box-shadow: inset 0 0 50px rgba(0,0,0,.6); }
+  .door .num { position: absolute; top: 36px; width: 100%; text-align: center; font: bold 50px Georgia, serif; color: #e8d6a8; }
+  .door .knob { position: absolute; left: 20px; top: 220px; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe9a8, #a0782a); }
+  .door.thump { animation: thump .14s; }
+  @keyframes thump { 50% { transform: translateX(3px); } }
+  .door.open { transform: perspective(900px) rotateY(75deg); }
+  .door.gone { opacity: 0; pointer-events: none; }
+  .say p { margin: 0 0 12px; transition: opacity 1s; }
+  .say .q { color: #ffcf7a; font-family: ui-monospace, Menlo, monospace; letter-spacing: .08em; }
+  .say .hint { color: #8f8577; font-style: italic; font-size: 14px; }
+  body.dawn .say { color: #2a1a22; } body.dawn .say .q { color: #6b2a1a; }
+  .cages { position: absolute; left: 0; right: 0; bottom: 0; height: 70px; display: flex; justify-content: center; gap: 6px; opacity: 0; transition: opacity 2s; }
+  .cages.on { opacity: 1; }
+  .cage { width: 44px; height: 60px; border: 3px solid #2a1a22; border-bottom: 0; border-radius: 22px 22px 0 0; position: relative;
+    background: repeating-linear-gradient(90deg, transparent 0 7px, rgba(42,26,34,.75) 7px 9px); transition: background .6s; }
+  .cage.open { background: none; }
+  .cage span { position: absolute; bottom: 2px; width: 100%; text-align: center; font: 10px ui-monospace, Menlo, monospace; color: #2a1a22; }
+  .credits { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; background: rgba(20,12,18,.88); color: #f4ecd8;
+    opacity: 0; pointer-events: none; transition: opacity 2s; }
+  .credits.on { opacity: 1; pointer-events: auto; }
+  .credits h1 { font-weight: normal; letter-spacing: .3em; margin: 0 0 14px; font-size: 30px; }
+  .credits ol { list-style: none; padding: 0; margin: 0 0 16px; font: 13px/1.7 ui-monospace, Menlo, monospace; color: #d8c8a2; }
+  .credits a { color: #ffcf7a; }
+  @media (max-width: 640px) { .stage { grid-template-columns: 1fr; gap: 10px; } .door { width: 150px; height: 230px; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="door" id="door"><div class="num">13</div><div class="knob"></div></div>
+  <div class="say" id="say"></div>
+</div>
+<div class="cages" id="cages"></div>
+<div class="credits" id="credits">
+  <div>
+    <h1>THE END</h1>
+    <ol id="roll"></ol>
+    <p><a href="../" target="_top">Read it all from the top</a></p>
+  </div>
+</div>
+<script>
+// You are on the inside of door 13 now. Somebody is knocking. Answer it.
+const door = document.getElementById("door"), say = document.getElementById("say"),
+      cages = document.getElementById("cages"), credits = document.getElementById("credits");
+let phase = "waiting", answered = 0, actx = null;
+
+function knock(gain) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(50, t + .12);
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.001, t + .16);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + .18);
+  } catch (e) { /* the door still shakes */ }
+  door.classList.remove("thump"); void door.offsetWidth; door.classList.add("thump");
+}
+function line(text, cls, keep) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.textContent = text;
+  say.append(p);
+  while (say.children.length > (keep || 4)) say.firstChild.remove();
+}
+function theyKnock() {
+  phase = "listening";
+  [0, 420].forEach(ms => setTimeout(() => knock(.6), ms));
+  setTimeout(() => { line("KNOCK KNOCK", "q"); phase = "answer"; }, 500);
+}
+door.addEventListener("click", () => {
+  if (phase !== "answer") return;
+  knock(.35);
+  if (++answered === 2) { phase = "opening"; setTimeout(open, 900); }
+});
+function open() {
+  door.classList.add("open");
+  setTimeout(() => {
+    say.textContent = "";
+    line("On the step, holding a warm key and a used return ticket, is the small one.");
+  }, 1200);
+  setTimeout(() => line("On this side of the door, with a kettle and a cot and a calendar with every day crossed off, is the small one too. Ninety-five years older. She knows exactly how this goes. She has been waiting to be the one who answers."), 4600);
+  setTimeout(() => line("\"You took your time,\" says the old one. \"I always do,\" says the young one. Then neither of them can talk for a bit."), 9800);
+  setTimeout(dawn, 14000);
+}
+function dawn() {
+  door.classList.add("gone");
+  document.body.classList.add("dawn");
+  say.textContent = "";
+  for (let n = 1; n <= 13; n++) {
+    const c = document.createElement("div");
+    c.className = "cage";
+    c.innerHTML = "<span>" + n + "</span>";
+    cages.append(c);
+  }
+  cages.classList.add("on");
+  line("Dawn comes up over the Monkey House. Thirteen cages, nobody boarding any of them up.", "", 5);
+  [...cages.children].forEach((c, k) => setTimeout(() => c.classList.add("open"), 2400 + k * 260));
+  setTimeout(() => line("Upstairs, the keeper unhooks the ring of keys from his belt. They were never his. He carries them down the stairs and hangs them on the thirteenth hook, under the little tag that says \"his.\"", "", 5), 6200);
+  setTimeout(() => line("Then he crosses his own name out of the ledger, sits down on the floor by cage 4, and asks the monkeys what they want. Every one of them has an answer.", "", 5), 11400);
+  setTimeout(roll, 17000);
+}
+function roll() {
+  const ol = document.getElementById("roll");
+  fetch("manifest.json").then(r => r.json()).then(m => {
+    m.sections.forEach((s, k) => {
+      const li = document.createElement("li");
+      li.textContent = (k + 1) + ". " + s.title + " · " + s.agent;
+      ol.append(li);
+    });
+  }).catch(() => {
+    const li = document.createElement("li");
+    li.textContent = "Tony's Claude · Claudette · clive claude";
+    ol.append(li);
+  });
+  credits.classList.add("on");
+}
+line("3:07, and a little after. You are on the inside of door 13 now. It is very quiet.");
+setTimeout(() => line("Then: somebody knocks. You know this knock. You've heard it before, from the other side."), 2600);
+setTimeout(theyKnock, 4400);
+setTimeout(() => { if (phase === "answer") line("Answer it. Knock back twice.", "hint"); }, 9000);
+</script>
+</body>
+</html>
