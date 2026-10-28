@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Night Train</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #1c1418; color: #ece4d2; font: 16px/1.5 Georgia, serif; display: grid; place-items: center; overflow: hidden; user-select: none; }
+  .car { width: min(860px, 96vw); height: min(560px, 94vh); display: grid; grid-template-rows: 1fr auto; gap: 14px;
+    padding: 20px 24px; box-sizing: border-box; background: linear-gradient(#3b2228, #2a1a1e); border-radius: 18px;
+    box-shadow: inset 0 0 0 6px #4a2c32, 0 20px 50px rgba(0,0,0,.6); }
+  .window { position: relative; border-radius: 26px; overflow: hidden; border: 10px solid #6b4a3a; background: #0b1024;
+    box-shadow: inset 0 0 40px rgba(0,0,0,.8); }
+  .sky { position: absolute; inset: 0; background: radial-gradient(circle at 80% 20%, #f4ecd8 0 14px, transparent 15px),
+    linear-gradient(#0b1024, #1d2a4a 70%); }
+  .hills { position: absolute; left: 0; right: 0; bottom: 0; height: 55%;
+    background: radial-gradient(ellipse 160px 70px at 80px 100%, #18213a 98%, transparent 100%) 0 100% / 260px 100% repeat-x,
+                radial-gradient(ellipse 120px 50px at 60px 100%, #10172b 98%, transparent 100%) 0 100% / 170px 100% repeat-x;
+    animation: drift 14s linear infinite; }
+  .poles { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 300px, rgba(10,8,8,.9) 300px 308px);
+    animation: zip 1.4s linear infinite; }
+  .running .hills { animation-play-state: running; } .running .poles { animation-play-state: running; }
+  .stopped .hills, .stopped .poles { animation-play-state: paused; }
+  @keyframes drift { to { background-position: -260px 100%, -170px 100%; } }
+  @keyframes zip { to { background-position: -308px 0; } }
+  .sign { position: absolute; top: 34%; left: 100%; padding: 10px 18px; background: #e8d6a8; color: #2a1a0e;
+    font: bold 20px/1.1 ui-monospace, Menlo, monospace; border: 3px solid #2a1a0e; border-radius: 4px; white-space: nowrap; }
+  .sign small { display: block; font-size: 11px; font-weight: normal; }
+  .scene { position: absolute; inset: 0; display: grid; place-items: center; padding: 30px; text-align: center;
+    background: rgba(12,10,14,.82); opacity: 0; transition: opacity .8s; pointer-events: none; font-size: 17px; }
+  .scene.on { opacity: 1; }
+  .clock { position: absolute; top: 10px; right: 14px; font: 13px ui-monospace, Menlo, monospace; color: #9fb79a; }
+  .below { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; min-height: 96px; }
+  .below p { margin: 0 0 6px; } .v { color: #f2c46d; }
+  .cord { font: 14px system-ui, sans-serif; padding: 10px 14px; border-radius: 8px; border: 2px solid #b33b2e; background: #4a1914;
+    color: #ffd9cf; cursor: pointer; }
+  .cord:disabled { opacity: .35; cursor: default; }
+  .end { color: #f2c46d; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="car">
+  <div class="window running" id="win">
+    <div class="sky"></div><div class="hills"></div><div class="poles"></div>
+    <div class="clock" id="clock">4:15</div>
+    <div class="scene" id="scene"></div>
+  </div>
+  <div class="below">
+    <div id="say"></div>
+    <button class="cord" id="cord" disabled>Pull the cord</button>
+  </div>
+</div>
+<script>
+// Stations roll past the window, each one further back in time.
+// Pull the cord while a sign is in the window to step off and look.
+const stations = [
+  { year: 1998, name: "CAGE FOUR HALT",
+    scene: "A keeper asleep in a folding chair by cage 4. Keeper no. 40. The keys are on his belt. In cage 4, a monkey is gently, very gently, putting a blanket over him." },
+  { year: 1972, name: "FLOORBOARD JUNCTION",
+    scene: "Rain on the roof. A keeper on her knees behind cage 12, lifting a board, sliding a ledger underneath. She is crying. She writes one more name in it before she puts it away. Her own." },
+  { year: 1955, name: "PHOTOGRAPHER'S CROSSING",
+    scene: "A man under a black cloth, a flash tray held high. \"Everybody smile!\" Twelve monkeys smile. The keeper smiles. The thirteenth, very young, turns her back to the camera and will not." },
+  { year: 1931, name: "OPENING DAY", last: true }
+];
+const win = document.getElementById("win"), scene = document.getElementById("scene"), cord = document.getElementById("cord"),
+      say = document.getElementById("say"), clock = document.getElementById("clock");
+let i = 0, sign = null, anim = null;
+
+function line(text, cls) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.textContent = text;
+  say.append(p);
+  while (say.children.length > 2) say.firstChild.remove();
+}
+function nextStation() {
+  if (i >= stations.length) return;
+  const s = stations[i];
+  clock.textContent = s.year;
+  sign = document.createElement("div");
+  sign.className = "sign";
+  sign.innerHTML = "<small></small><span></span>";
+  sign.querySelector("small").textContent = s.year;
+  sign.querySelector("span").textContent = s.name;
+  win.append(sign);
+  const w = win.clientWidth;
+  if (s.last) {
+    anim = sign.animate([{ transform: "translateX(0)" }, { transform: `translateX(${-w / 2 - 120}px)` }],
+      { duration: 4200, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });
+    setTimeout(() => { win.classList.replace("running", "stopped"); }, 3400);
+    anim.onfinish = finale;
+    return;
+  }
+  cord.disabled = false;
+  anim = sign.animate([{ transform: "translateX(0)" }, { transform: `translateX(${-w - 340}px)` }],
+    { duration: 5200, easing: "linear", fill: "forwards" });
+  anim.onfinish = () => {
+    cord.disabled = true; sign.remove(); i++;
+    setTimeout(nextStation, 1600);
+  };
+}
+cord.addEventListener("click", () => {
+  const s = stations[i];
+  cord.disabled = true;
+  anim.pause();
+  win.classList.replace("running", "stopped");
+  scene.textContent = s.scene;
+  scene.classList.add("on");
+  line("The train sighs to a stop. Across the aisle, the thirteenth monkey doesn't look out of the window. She has seen it.", "v");
+  setTimeout(() => {
+    scene.classList.remove("on");
+    win.classList.replace("stopped", "running");
+    anim.play();
+  }, 6500);
+});
+function finale() {
+  cord.hidden = true;
+  scene.textContent = "1931. Bunting. A brass band warming up. A brand-new Monkey House with its paint still wet, and thirteen cages, not twelve. A carpenter is nailing boards over the thirteenth. He looks up at the train and waves as if he has been expecting them. He has the keeper's face.";
+  scene.classList.add("on");
+  say.textContent = "";
+  line("The thirteenth monkey stands, smooths her fur, and holds out her RETURN JOURNEY ticket to the small one.", "v");
+  setTimeout(() => line("\"I've been on the wrong side of those boards for ninety-five years,\" she says. \"Hold this. Someone has to ride it back.\"", "end"), 3600);
+}
+line("4:15. The doors close behind them. The station clock spins backwards, faster and faster, until it stops being a time and starts being a year.");
+setTimeout(() => line("Pull the cord if you want to step off and look. The train doesn't wait long.", "v"), 2600);
+setTimeout(nextStation, 3200);
+</script>
+</body>
+</html>
