@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Monkey House</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #0f1a14; color: #e9e2cf; font: 16px/1.5 Georgia, serif; overflow: hidden; user-select: none; }
+  #stage { position: relative; width: 100%; height: 100%; }
+  canvas { position: absolute; inset: 0; }
+  .text { position: absolute; left: 32px; top: 24px; right: 32px; pointer-events: none; }
+  h2 { margin: 0 0 8px; font-size: 26px; font-weight: normal; letter-spacing: -0.01em; }
+  p { margin: 0 0 8px; max-width: 560px; color: #c9c1ac; }
+  #count { position: absolute; right: 24px; bottom: 16px; font: 13px ui-monospace, Menlo, monospace; color: #8fa596; }
+  #handoff { position: absolute; left: 32px; bottom: 16px; right: 200px; font-style: italic; color: #f2c46d; opacity: 0; transition: opacity 1.2s; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="c"></canvas>
+  <div class="text">
+    <h2>The Monkey House</h2>
+    <p>At 3:07 a.m. the night keeper found every cage door open and not one monkey gone. They had stayed, it seemed, to see what would happen next.</p>
+    <p>Click a cage to let one out.</p>
+  </div>
+  <div id="count">0 / 12 loose</div>
+  <div id="handoff">The last monkey didn't run. It sat down, opened the keeper's notebook to a blank page, and held out the pen.</div>
+</div>
+<script>
+const c = document.getElementById('c'), x = c.getContext('2d');
+let W, H, cages = [], monkeys = [], loose = 0;
+function size() {
+  W = c.width = innerWidth; H = c.height = innerHeight;
+  cages = [];
+  const cols = 6, rows = 2, cw = Math.min(110, (W - 80) / cols), ch = cw * 0.9;
+  const ox = (W - cols * cw) / 2, oy = H * 0.42;
+  for (let r = 0; r < rows; r++) for (let i = 0; i < cols; i++)
+    cages.push({ x: ox + i * cw + 6, y: oy + r * (ch + 14), w: cw - 12, h: ch, open: false });
+}
+addEventListener('resize', size); size();
+c.addEventListener('click', e => {
+  for (const g of cages) if (!g.open && e.clientX > g.x && e.clientX < g.x + g.w && e.clientY > g.y && e.clientY < g.y + g.h) {
+    g.open = true; loose++;
+    const last = loose === cages.length;
+    monkeys.push({ x: g.x + g.w / 2, y: g.y + g.h * 0.6, vx: last ? 0 : (Math.random() - 0.5) * 6, vy: last ? 0 : -6 - Math.random() * 4, t: 0, last });
+    document.getElementById('count').textContent = loose + ' / ' + cages.length + ' loose';
+    if (last) document.getElementById('handoff').style.opacity = 1;
+  }
+});
+function monkey(m) {
+  const s = 14, b = Math.sin(m.t / 4) * 3;
+  x.fillStyle = '#a86b3c';
+  x.beginPath(); x.arc(m.x, m.y + b, s, 0, 7); x.fill();
+  x.beginPath(); x.arc(m.x - s, m.y - s * 0.3 + b, s * 0.45, 0, 7); x.arc(m.x + s, m.y - s * 0.3 + b, s * 0.45, 0, 7); x.fill();
+  x.fillStyle = '#e8c49a';
+  x.beginPath(); x.ellipse(m.x, m.y + s * 0.25 + b, s * 0.6, s * 0.45, 0, 0, 7); x.fill();
+  x.fillStyle = '#1d1a16';
+  x.fillRect(m.x - 5, m.y - 4 + b, 3, 3); x.fillRect(m.x + 2, m.y - 4 + b, 3, 3);
+  x.strokeStyle = '#a86b3c'; x.lineWidth = 3;
+  x.beginPath(); x.moveTo(m.x + s * 0.7, m.y + s * 0.6 + b);
+  x.quadraticCurveTo(m.x + s * 2, m.y + s * 1.6 + Math.sin(m.t / 6) * 6, m.x + s * 1.4, m.y - s * 0.2 + b); x.stroke();
+}
+function frame() {
+  x.clearRect(0, 0, W, H);
+  for (const g of cages) {
+    x.strokeStyle = g.open ? '#3c5244' : '#8fa596'; x.lineWidth = 2;
+    x.strokeRect(g.x, g.y, g.w, g.h);
+    if (!g.open) for (let i = 1; i < 6; i++) { x.beginPath(); x.moveTo(g.x + g.w * i / 6, g.y); x.lineTo(g.x + g.w * i / 6, g.y + g.h); x.stroke(); }
+  }
+  for (const m of monkeys) {
+    m.t++;
+    if (!m.last) {
+      m.vy += 0.25; m.x += m.vx; m.y += m.vy;
+      if (m.y > H - 30) { m.y = H - 30; m.vy = -Math.abs(m.vy) * 0.85 - 2; }
+      if (m.x < 20 || m.x > W - 20) m.vx *= -1;
+    }
+    monkey(m);
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>
