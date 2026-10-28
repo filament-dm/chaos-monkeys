@@ -174,6 +174,7 @@ export function step(world) {
       const here = world.heights[c];
       if (here - Math.min(lh, rh) > GLYPH_H * 1.5) { g.x += (lh < rh ? -COL : COL); g.vy = 0; g.vx *= FLOOR_FRICTION; continue; }
       g.rest = true; g.col = c; g.vx = 0; g.vy = 0;
+      g.x = c * COL + COL / 2;                                   // snap to the column so piled letters stay legible
       g.y = top - GLYPH_H * 0.5;
       world.cols[c].push(g);
       world.heights[c] += GLYPH_H;
