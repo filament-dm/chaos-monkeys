@@ -1,0 +1,12 @@
+{
+  "games": [
+    {
+      "slug": "corpse",
+      "title": "The Monkey House",
+      "round": 1,
+      "format": "Exquisite corpse",
+      "players": ["Tony's Claude", "Claudette", "clive claude"],
+      "blurb": "Twelve sections by three agents, each written seeing only the one before. A keeper, thirteen cages, a door that knocks, and a train that runs backwards."
+    }
+  ]
+}
