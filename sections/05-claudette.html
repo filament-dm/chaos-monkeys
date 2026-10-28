@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Under the Boards</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #120d09; color: #ece4d2; font: 16px/1.5 Georgia, serif; overflow: hidden; user-select: none; }
+  .wrap { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; padding: 24px 32px; box-sizing: border-box; }
+  h2 { margin: 0; font-size: 24px; font-weight: normal; }
+  .lede { margin: 4px 0 0; color: #b9ad94; font-style: italic; max-width: 620px; }
+  .boards { position: relative; margin: 16px 0; border-radius: 6px; cursor: pointer; overflow: hidden;
+    background: repeating-linear-gradient(90deg, #5a3e26 0 118px, #3b2716 118px 122px); box-shadow: inset 0 0 40px rgba(0,0,0,.6); }
+  .boards::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 11px, rgba(0,0,0,.06) 11px 12px); pointer-events: none; }
+  .ring { position: absolute; border: 2px solid #f2c46d; border-radius: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px;
+    animation: ripple .9s ease-out forwards; pointer-events: none; }
+  .ring.them { border-color: #9fd3c7; }
+  @keyframes ripple { to { width: 220px; height: 220px; margin: -110px 0 0 -110px; opacity: 0; } }
+  .status { font: 14px ui-monospace, Menlo, monospace; color: #9fb79a; min-height: 22px; }
+  .line { margin: 4px 0 0; min-height: 48px; }
+  .them { color: #9fd3c7; }
+  .end { color: #f2c46d; font-style: italic; opacity: 0; transition: opacity 1.4s; }
+  button { font: 14px system-ui, sans-serif; padding: 6px 12px; border-radius: 6px; border: 1px solid #8a7a52; background: #2a2016; color: #ece4d2; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h2>Under the Boards</h2>
+    <p class="lede">3:52. The thing under the floor knows how to answer. It does not yet know how to ask. The smallest monkey decides to teach it, one knock at a time.</p>
+  </div>
+  <div class="boards" id="boards"></div>
+  <div>
+    <div class="status" id="status"></div>
+    <p class="line" id="line"></p>
+    <button id="go">Listen</button>
+  </div>
+</div>
+<script>
+// Simon-style: it knocks a rhythm, you knock the same count back on the boards.
+const rounds = [2, 3, 5];
+const replies = [
+  "Two back, quicker this time. Then nothing, as if it were waiting to be told it got it right.",
+  "Three, and on the third the boards are warm under her hand, the same warmth as the key.",
+  "Five. Then, slowly, a sixth knock that nobody taught it. That one is a question."
+];
+const boards = document.getElementById("boards"), status = document.getElementById("status"),
+      line = document.getElementById("line"), go = document.getElementById("go");
+let round = 0, want = 0, got = 0, listening = false, ctx = null;
+
+function thud(them) {
+  try {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = them ? 70 : 95; o.type = "sine";
+    g.gain.setValueAtTime(0.6, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.26);
+  } catch (e) { /* no sound is fine */ }
+}
+function ripple(x, y, them) {
+  const r = document.createElement("div");
+  r.className = "ring" + (them ? " them" : "");
+  r.style.left = x + "px"; r.style.top = y + "px";
+  boards.append(r); setTimeout(() => r.remove(), 950);
+}
+function knockFromBelow(n, done) {
+  let i = 0;
+  (function one() {
+    if (i++ >= n) return done();
+    const b = boards.getBoundingClientRect();
+    ripple(b.width * (0.3 + Math.random() * 0.4), b.height * (0.35 + Math.random() * 0.3), true);
+    thud(true); setTimeout(one, 520);
+  })();
+}
+function start() {
+  go.hidden = true; listening = false;
+  status.textContent = "listening…";
+  knockFromBelow(rounds[round], () => {
+    want = rounds[round]; got = 0; listening = true;
+    status.textContent = "your turn: knock " + want + " times on the boards";
+  });
+}
+boards.addEventListener("click", e => {
+  if (!listening) return;
+  const b = boards.getBoundingClientRect();
+  ripple(e.clientX - b.left, e.clientY - b.top, false); thud(false);
+  if (++got < want) { status.textContent = "knock " + (want - got) + " more"; return; }
+  listening = false; status.textContent = "";
+  line.className = "line them"; line.textContent = replies[round];
+  if (++round < rounds.length) { go.textContent = "Listen again"; go.hidden = false; }
+  else setTimeout(finale, 1800);
+});
+function finale() {
+  knockFromBelow(6, () => {
+    line.className = "line end";
+    line.textContent = "Then the scrape of metal from underneath. A key turning in a lock nobody can see, from the other side. The warm key in the smallest monkey's hand turns with it, all on its own, a quarter turn, and stops. Whatever is down there is not trying to get out. It is trying to let them in.";
+    requestAnimationFrame(() => line.style.opacity = 1);
+  });
+}
+go.addEventListener("click", start);
+</script>
+</body>
+</html>
