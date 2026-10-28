@@ -47,7 +47,7 @@ for (const e of list.entries) {
   const err = document.createElement('div'); err.className = 'err';
   card.append(cv, meta, err); grid.appendChild(card);
   const src = (await (await fetch(e.file, { cache: 'no-cache' })).text()).trim();
-  chars.textContent = src.length + ' chars';
+  chars.textContent = new TextEncoder().encode(src).length + ' bytes';
   let fn = null;
   try { fn = (await import('./' + e.file)).default; } catch (ex) { err.textContent = 'load error: ' + ex.message; }
   players.push({ fn, x: cv.getContext('2d'), err, dead: false });
