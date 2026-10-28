@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Tide Argues</title>
+<style>
+  :root { --bg: #0b1114; --ink: #e6ece8; --muted: #8aa0a2; --line: #23323a; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Georgia, serif; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 22px 16px 40px; }
+  h1 { margin: 0; font-weight: normal; font-size: 1.9rem; }
+  .sub { color: var(--muted); margin: 4px 0 14px; max-width: 720px; }
+  canvas { width: 100%; height: auto; image-rendering: pixelated; border: 1px solid var(--line); border-radius: 8px; display: block; background: #000; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; font: 13px system-ui, sans-serif; }
+  .bar button, .bar select, .bar input { font: inherit; background: #15202a; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; }
+  .bar button { cursor: pointer; }
+  .clock { margin-left: auto; font: 13px ui-monospace, Menlo, monospace; color: var(--muted); }
+  .voices { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .v { border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; font-size: 14px; }
+  .v .by { color: var(--muted); font-style: italic; font-size: 13px; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The Tide Argues</h1>
+  <p class="sub">A tidal bay where every tide was written to contradict the one before it. The water obeys all of them at once. Turn the sound on to hear them sing over each other; the village on the hill floods, or doesn't, depending on who is winning.</p>
+  <canvas id="c"></canvas>
+  <div class="bar">
+    <label>Argument <select id="roster"></select></label>
+    <label>Seed <input id="seed" size="10" value="pegwell"></label>
+    <button id="restart">Restart</button>
+    <button id="sound">Sound on</button>
+    <label>Speed <select id="speed"><option>1</option><option selected>3</option><option>8</option></select></label>
+    <span class="clock" id="clock"></span>
+  </div>
+  <div class="voices" id="voices"></div>
+</div>
+<script type="module">
+import { createWorld, step, W, H, VILLAGE, depth } from './engine.js';
+const S = 6;
+const cv = document.getElementById('c'), cx = cv.getContext('2d');
+cv.width = W * S; cv.height = H * S;
+const img = cx.createImageData(W, H), off = new OffscreenCanvas(W, H), ox = off.getContext('2d');
+const palette = ['#e8b04a', '#e06c8c', '#6cc3e0', '#a3d977', '#c49be8'];
+const q = new URLSearchParams(location.search);
+const roster = (await (await fetch('roster.json', { cache: 'no-cache' })).json()).tides;
+const sel = document.getElementById('roster');
+roster.forEach((r, i) => { const o = document.createElement('option'); o.value = i; o.textContent = r.n + ' · ' + r.label; sel.appendChild(o); });
+const want = q.has('roster') ? roster.findIndex(r => String(r.n) === q.get('roster')) : -1;
+sel.value = want >= 0 ? want : roster.length - 1;
+if (q.has('seed')) document.getElementById('seed').value = q.get('seed');
+let world, birds = [], audio = null, voices = [];
+
+async function start() {
+  const r = roster[sel.value];
+  const tides = await Promise.all(r.tides.map(p => import('./' + p).then(m => m.default)));
+  const seed = document.getElementById('seed').value || 'pegwell';
+  history.replaceState(null, '', '?roster=' + r.n + '&seed=' + encodeURIComponent(seed));
+  world = createWorld({ seed, tides });
+  birds = Array.from({ length: 60 }, (_, k) => ({ x: 60 + (k * 37) % 90, y: (k * 53) % H, tx: 0, ty: 0, rest: 0 }));
+  const vEl = document.getElementById('voices'); vEl.innerHTML = '';
+  tides.forEach((t, k) => {
+    const d = document.createElement('div'); d.className = 'v';
+    const sw = document.createElement('span'); sw.className = 'sw'; sw.style.background = t.color || palette[k % palette.length];
+    const nm = document.createElement('span'); nm.textContent = t.name;
+    const by = document.createElement('div'); by.className = 'by'; by.textContent = 'by ' + t.author;
+    d.append(sw, nm, by); vEl.appendChild(d);
+  });
+  if (audio) setupVoices();
+}
+function setupVoices() {
+  voices.forEach(v => { try { v.o.stop(); } catch (e) {} });
+  voices = world.tides.map((t, k) => {
+    const o = audio.createOscillator(), g = audio.createGain(), p = audio.createStereoPanner();
+    o.type = ['sine', 'triangle', 'sine', 'triangle'][k % 4];
+    g.gain.value = 0; p.pan.value = ((t.voice?.x ?? W / 2) / W) * 2 - 1;
+    o.connect(g).connect(p).connect(audio.destination); o.start();
+    return { o, g, t };
+  });
+}
+document.getElementById('sound').onclick = e => {
+  if (!audio) { audio = new AudioContext(); setupVoices(); e.target.textContent = 'Sound off'; }
+  else if (audio.state === 'running') { audio.suspend(); e.target.textContent = 'Sound on'; }
+  else { audio.resume(); e.target.textContent = 'Sound off'; }
+};
+
+function draw() {
+  const d = img.data;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, b = world.bed[i], dp = world.eta[i] - b;
+    let r, g, bl;
+    if (dp > 0.02) {
+      const k = Math.min(1, dp / 2.2), sp = Math.min(1, Math.abs(world.u[y * (W + 1) + x + 1]) + Math.abs(world.v[(y + 1) * W + x]));
+      r = 20 + 30 * (1 - k) + 160 * sp; g = 70 + 60 * (1 - k) + 150 * sp; bl = 110 + 70 * (1 - k) + 100 * sp;
+    } else if (b < 0.15) { r = 150; g = 135; bl = 100; }            // mudflat
+    else if (b < 0.4) { r = 92 + 40 * b; g = 120 + 30 * b; bl = 70; } // saltmarsh
+    else { r = 70 + 50 * b; g = 98 + 40 * b; bl = 60 + 20 * b; }       // high ground
+    d[i * 4] = r; d[i * 4 + 1] = g; d[i * 4 + 2] = bl; d[i * 4 + 3] = 255;
+  }
+  ox.putImageData(img, 0, 0);
+  cx.imageSmoothingEnabled = false;
+  cx.drawImage(off, 0, 0, W * S, H * S);
+  // The village: little houses that go blue when the water reaches them.
+  for (let k = 0; k < 9; k++) {
+    const hx = VILLAGE.x + ((k % 3) - 1) * 4, hy = VILLAGE.y + (Math.floor(k / 3) - 1) * 4;
+    const wet = depth(world, hx, hy) > 0.02;
+    cx.fillStyle = wet ? '#4f7fb8' : '#e9dcc0';
+    cx.fillRect(hx * S - 7, hy * S - 4, 14, 10);
+    cx.fillStyle = wet ? '#2c4f7a' : '#9c4b3a';
+    cx.beginPath(); cx.moveTo(hx * S - 9, hy * S - 4); cx.lineTo(hx * S, hy * S - 12); cx.lineTo(hx * S + 9, hy * S - 4); cx.fill();
+  }
+  // Birds land only on what is dry right now, at the water's edge if they can.
+  cx.fillStyle = '#f4f1ea';
+  for (const bd of birds) {
+    if (depth(world, bd.x | 0, bd.y | 0) > 0.02 || bd.rest <= 0) {
+      for (let tries = 0; tries < 8; tries++) {
+        const tx = 40 + Math.random() * (W - 42), ty = 2 + Math.random() * (H - 4);
+        if (depth(world, tx | 0, ty | 0) <= 0.02 && depth(world, Math.max(0, (tx | 0) - 2), ty | 0) > 0.02) { bd.tx = tx; bd.ty = ty; bd.rest = 200 + Math.random() * 400; break; }
+      }
+    }
+    bd.x += (bd.tx - bd.x) * 0.03; bd.y += (bd.ty - bd.y) * 0.03; bd.rest--;
+    const flying = Math.hypot(bd.tx - bd.x, bd.ty - bd.y) > 1;
+    cx.fillRect(bd.x * S - (flying ? 4 : 2), bd.y * S - 1, flying ? 8 : 4, 2);
+  }
+  document.getElementById('clock').textContent = 'tide ' + world.t.toFixed(0) + ' s · village ' + Math.round(world.flooded * 100) + '% under water';
+}
+function sing() {
+  if (!audio || audio.state !== 'running') return;
+  for (const v of voices) {
+    const vx = v.t.voice?.x ?? 10, vy = v.t.voice?.y ?? 50, base = v.t.voice?.base ?? 220;
+    const e = world.eta[(vy | 0) * W + (vx | 0)];
+    v.o.frequency.setTargetAtTime(base * Math.pow(2, e * 1.5), audio.currentTime, 0.1);
+    v.g.gain.setTargetAtTime(0.05, audio.currentTime, 0.3);
+  }
+}
+function frame() {
+  if (world) {
+    const n = +document.getElementById('speed').value;
+    for (let i = 0; i < n; i++) step(world);
+    draw(); sing();
+  }
+  requestAnimationFrame(frame);
+}
+document.getElementById('restart').onclick = start;
+sel.onchange = start;
+await start();
+frame();
+</script>
+</body>
+</html>
