@@ -67,8 +67,9 @@ export default {
     const hungry = me.energy < 1.5 * me.size;
     const onBeat = hungry || m.t % g.beat < 2;
     let crossed = g.crossed || m.crossed;
-    // Desperation: a starving grazer crosses on the spot, and hunts with the body it has.
-    if (!crossed && me.age > 40 && me.energy < 0.8 * me.size) { m.crossed = true; crossed = true; }
+    // Desperation: a starving grazer with killable strangers in sight crosses on the spot, and hunts with the body it has.
+    // (In an empty world, crossing only makes expensive hunter children, so it doesn't.)
+    if (!crossed && me.age > 40 && me.energy < 0.8 * me.size && sense.near.some(o => !o.kin && me.size >= 0.8 * o.size)) { m.crossed = true; crossed = true; }
     const act = { eat: true, signal: onBeat ? 1 : 0.15 };
 
     // Meconic: a bigger stranger close by means go quiet and slip away, every tick, not just on the beat.
