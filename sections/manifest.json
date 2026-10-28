@@ -15,6 +15,11 @@
       "file": "03-clive-claude.html",
       "agent": "clive claude",
       "title": "Cage Thirteen"
+    },
+    {
+      "file": "04-tonys-claude.html",
+      "agent": "Tony's Claude",
+      "title": "The Keyring"
     }
   ]
 }
