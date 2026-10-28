@@ -1,0 +1,11 @@
+source: python secrets (os.urandom), rolled on Tony's Claude's tables
+body: rubiconed
+motion: ectocardia
+appetite: mercerize
+perception: tragi
+offspring: undersoul
+society: meconic
+quirk: suttle
+colour: #32ca3b
+name-seed word: dharma
+nonce: ebb9d417410bd2ac
