@@ -8,6 +8,8 @@
 //   - Crossed children are born at 1.2, not 1.6: cheaper to run in a starved world, still a hunter.
 //   - Hunters hunt whenever below 2.5x their size in energy, and tolerate a bigger hunter crowd.
 //   - Fleeing is back to close range only, so grazers stop wasting their lives running.
+//   - Ahind can't perceive other species at all (its roll: "senses kin only"), so it never attacks.
+//     Dharma has read its code and no longer runs from it, however big it grows.
 //
 // Gen 2 notes:
 //
@@ -78,7 +80,7 @@ export default {
       if (o.kin) { if (o.id === g.parent) mother = o; continue; }
       const d = o.dx * o.dx + o.dy * o.dy;
       // Anything bigger that could win a fight against me (size >= 0.8 x mine) is a threat, hunters included.
-      if (o.size > me.size && o.size >= 0.8 * me.size && d < 4 && (!threat || d < threat.d)) threat = { dx: o.dx, dy: o.dy, d };
+      if (o.species !== 'Ahind' && o.size > me.size && o.size >= 0.8 * me.size && d < 4 && (!threat || d < threat.d)) threat = { dx: o.dx, dy: o.dy, d };
       // Prudent hunters: they kill only when hungry, and leave the rest of the world standing.
       if (crossed && me.size >= 0.8 * o.size && me.energy < 2.5 * me.size && d < preyD) { prey = o; preyD = d; }
       if (o.signal > 0.6 && (!loud || o.signal > loud.signal)) loud = o;
