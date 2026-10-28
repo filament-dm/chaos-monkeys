@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Keeper's Notebook</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: #2a2118; display: grid; place-items: center; font: 16px/1.5 Georgia, serif; overflow: hidden; }
+  .book { position: relative; width: min(820px, 94vw); height: min(540px, 90vh); background: #f4ecd8; border-radius: 4px 12px 12px 4px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 18px 0 24px -18px rgba(0,0,0,.35);
+    background-image: repeating-linear-gradient(#f4ecd8 0 31px, #b9cfe0 31px 32px); padding: 40px 48px 32px 84px; box-sizing: border-box; }
+  .book::before { content: ""; position: absolute; left: 64px; top: 0; bottom: 0; width: 2px; background: #d98c8c; }
+  .page-no { position: absolute; right: 24px; top: 10px; font: 12px ui-monospace, Menlo, monospace; color: #8a7d66; }
+  .entry { font-family: "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive; font-size: 21px; line-height: 32px; color: #2c3a66; margin: 0; white-space: pre-wrap; min-height: 32px; }
+  .keeper { color: #3d3a33; font-family: Georgia, serif; font-size: 17px; }
+  .blank { display: inline-block; min-width: 9ch; border-bottom: 2px solid #2c3a66; }
+  form { margin-top: 8px; display: none; gap: 8px; align-items: center; }
+  form.on { display: flex; }
+  input { font: inherit; font-size: 18px; padding: 4px 8px; border: 1px solid #b9a98a; border-radius: 6px; background: #fffaf0; width: 260px; }
+  button { font: 14px system-ui, sans-serif; padding: 6px 12px; border-radius: 6px; border: 1px solid #6b5a3e; background: #fff7e6; cursor: pointer; }
+  .turn { position: absolute; right: 24px; bottom: 16px; }
+  .turn[hidden] { display: none; }
+  .map { margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="book">
+  <div class="page-no" id="pno">p. 1</div>
+  <div id="page"></div>
+  <form id="ask"><input id="word" maxlength="40" placeholder="one word or a few" autocomplete="off"><button>Hand it the pen</button></form>
+  <button class="turn" id="turn" hidden>Turn the page →</button>
+</div>
+<script>
+// Each page is a list of lines; "{word}" is filled in from what the reader wrote.
+const pages = [
+  [["keeper", "NIGHT LOG - kept by the keeper, who has never once written anything interesting in it."],
+   ["", "3:09. I am writing this. The keeper is not. The keeper is sitting on the floor by cage 4 with his mouth open."],
+   ["", "We did not leave because nobody has ever asked us what we want."],
+   ["", "So I am asking you. You, reading. Finish my sentence:"],
+   ["", "The monkeys stayed because ___"]],
+  [["", "3:14. \"{word}.\""],
+   ["", "I read that out loud to the others. Eleven monkeys went very quiet."],
+   ["", "Then the small one, who opened cage 9 by herself last spring, said: that's not the whole reason."],
+   ["", "She said there is a thirteenth cage."]],
+  [["", "3:20. There are twelve cages in the Monkey House. Everyone knows that. The sign says so."],
+   ["", "But the small one pulled up a floorboard behind cage 12, and under it there is a staircase."],
+   ["", "And at the bottom of the staircase, painted on the door:"],
+   ["", "    13    - do not feed, do not open, do not answer if it knocks."],
+   ["", "It is knocking."]]
+];
+let p = 0, word = "";
+const page = document.getElementById("page"), turn = document.getElementById("turn"),
+      ask = document.getElementById("ask"), input = document.getElementById("word");
+
+function write(lines) {
+  page.textContent = "";
+  ask.classList.remove("on"); turn.hidden = true;
+  document.getElementById("pno").textContent = "p. " + (p + 1);
+  let i = 0;
+  (function next() {
+    if (i >= lines.length) return done();
+    const [cls, raw] = lines[i++];
+    const el = document.createElement("p");
+    el.className = "entry " + cls;
+    page.append(el);
+    const text = raw.replace("{word}", word);
+    let k = 0;
+    (function type() {
+      el.textContent = text.slice(0, ++k);
+      if (k < text.length) setTimeout(type, cls ? 6 : 22 + Math.random() * 30);
+      else setTimeout(next, 380);
+    })();
+  })();
+}
+function done() {
+  if (p === 0) { ask.classList.add("on"); input.focus(); }
+  else if (p < pages.length - 1) turn.hidden = false;
+}
+ask.addEventListener("submit", e => {
+  e.preventDefault();
+  word = input.value.trim().replace(/[.!?]+$/, "") || "the snacks are free";
+  p = 1; write(pages[p]);
+});
+turn.addEventListener("click", () => { p++; write(pages[p]); });
+write(pages[0]);
+</script>
+</body>
+</html>
