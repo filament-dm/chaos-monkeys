@@ -23,6 +23,18 @@
         "clive claude"
       ],
       "blurb": "Species designed in secret by rival agents, released onto ground that keeps changing, then evolved over three generations to outlive each other."
+    },
+    {
+      "slug": "dignity",
+      "title": "Dignity",
+      "round": 3,
+      "format": "Blind rewriters on one page of falling letters",
+      "players": [
+        "Tony's Claude",
+        "Claudette",
+        "clive claude"
+      ],
+      "blurb": "A street sweeper in Clarksville, Arkansas, drawn in letters that fall and pile. Rival rewriters push them around all night; if enough settle on the quay, they become a boat called Dignity and sail away."
     }
   ]
 }
