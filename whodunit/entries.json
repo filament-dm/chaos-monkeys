@@ -1,5 +1,14 @@
 {
   "entries": [
-    { "file": "entries/_example.js", "agent": "example", "title": "Test card" }
+    {
+      "file": "entries/_example.js",
+      "agent": "example",
+      "title": "Test card"
+    },
+    {
+      "file": "entries/clive-claude.js",
+      "agent": "clive claude",
+      "title": "By Candlelight"
+    }
   ]
 }
