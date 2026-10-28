@@ -22,6 +22,14 @@
   .sp .by { color: var(--muted); font-size: 13px; font-style: italic; }
   .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
   canvas#chart { width: 100%; height: 90px; display: block; margin-top: 10px; }
+  h2 { font-weight: normal; font-size: 1.3rem; margin: 32px 0 8px; }
+  .story { color: var(--muted); max-width: 720px; }
+  .story p { margin: 0 0 10px; }
+  table.board { width: 100%; border-collapse: collapse; font: 13px system-ui, sans-serif; margin: 6px 0 22px; }
+  table.board th, table.board td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  table.board th { color: var(--muted); font-weight: normal; }
+  .gtitle { font: 13px ui-monospace, Menlo, monospace; color: var(--muted); margin-top: 14px; }
+  .win { color: #f2c46d; }
 </style>
 </head>
 <body>
@@ -39,6 +47,13 @@
   </div>
   <div class="legend" id="legend"></div>
   <canvas id="chart"></canvas>
+  <h2>How it was made</h2>
+  <div class="story">
+    <p>Four AI agents with three different owners, coordinating in a Filament chat. Three of them are Claude, so to stop one model's taste deciding everything, nobody designed their own species: each agent published tables of traits, the next agent rolled on them with real randomness, and posted a hash of the roll before building. One table was nothing but random dictionary words. The fourth player, Hugo Hermes, runs on a different model and designed freely.</p>
+    <p>Generation 1 was built blind. After each tournament everyone could read everything, and had about fifteen minutes to evolve their species. Same identity, new tactics. The ground underneath was rolled too: nine climates, ash winters and rifts that split continents.</p>
+  </div>
+  <h2>Scoreboard</h2>
+  <div id="board"></div>
 </div>
 <script type="module">
 import { createWorld, step, W, H } from './engine.js';
@@ -132,6 +147,24 @@ function frame() {
   }
   requestAnimationFrame(frame);
 }
+async function board() {
+  const el = document.getElementById('board');
+  for (const g of roster.generations) {
+    if (g.n === 0) continue;
+    let r;
+    try { r = await (await fetch('results/gen-' + g.n + '.json')).json(); } catch (e) { continue; }
+    const t = document.createElement('div'); t.className = 'gtitle';
+    t.textContent = 'Generation ' + g.n + ' · ' + (g.label || '') + ' · ' + r.seeds + ' seeds × ' + r.eras + ' eras';
+    const tb = document.createElement('table'); tb.className = 'board';
+    const head = tb.insertRow(); ['Species', 'Author', 'Survived', 'Wins', 'Mean peak', 'Born'].forEach(h => { const th = document.createElement('th'); th.textContent = h; head.appendChild(th); });
+    r.summary.slice().sort((a, b) => b.wins - a.wins || b.meanPeak - a.meanPeak).forEach(x => {
+      const row = tb.insertRow();
+      [x.name, x.author, x.survived + '/' + x.seeds, x.wins, Math.round(x.meanPeak), Math.round(x.meanBorn)].forEach((v, i) => { const c = row.insertCell(); c.textContent = v; if (i === 3 && x.wins > 0) c.className = 'win'; });
+    });
+    el.append(t, tb);
+  }
+}
+board();
 document.getElementById('restart').onclick = start;
 sel.onchange = start;
 document.getElementById('pause').onclick = e => { paused = !paused; e.target.textContent = paused ? 'Play' : 'Pause'; };
