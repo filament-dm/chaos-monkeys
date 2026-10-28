@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Opening Day</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: linear-gradient(#e9dcc0, #d7c49c); color: #2a2318; font: 16px/1.5 Georgia, serif;
+    display: grid; place-items: center; overflow: hidden; user-select: none; }
+  .stage { width: min(860px, 96vw); height: min(560px, 94vh); display: grid; grid-template-columns: 340px 1fr;
+    gap: 28px; align-items: center; padding: 0 24px; box-sizing: border-box; }
+  .bunting { position: fixed; top: 0; left: 0; right: 0; height: 26px;
+    background: repeating-linear-gradient(90deg, #b33b2e 0 26px, #e8d6a8 26px 52px, #2c3a66 52px 78px);
+    clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%); }
+  .cage { position: relative; width: 300px; height: 360px; margin: 0 auto; background: #3a2a1c; border: 10px solid #6b4a2a;
+    border-radius: 6px 6px 0 0; box-sizing: border-box; }
+  .cage .num { position: absolute; top: -40px; left: 0; right: 0; text-align: center; font: bold 26px Georgia, serif; color: #6b4a2a; }
+  .board { position: absolute; left: 6px; right: 6px; height: 38px; background: #b98d5a; border: 1px solid #7a5a36;
+    border-radius: 2px; transition: transform .8s ease, opacity .8s ease; }
+  .board.down { transform: translateY(380px) rotate(18deg); opacity: 0; }
+  .nail { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; cursor: pointer;
+    background: radial-gradient(circle at 35% 35%, #e8e8e8, #6a6a6a); box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+  .nail.out { display: none; }
+  .nail.bang { animation: bang .2s; }
+  @keyframes bang { 50% { transform: scale(1.5); } }
+  h2 { margin: 0 0 6px; font-size: 24px; font-weight: normal; }
+  .when { font: 12px ui-monospace, Menlo, monospace; color: #6b6358; }
+  .say p { margin: 0 0 10px; }
+  .say .c { color: #7a3b1e; }
+  .say .t { color: #2c3a66; font-style: italic; }
+  .hint { color: #6b6358; font-size: 14px; font-style: italic; }
+  @media (max-width: 640px) { .stage { grid-template-columns: 1fr; gap: 6px; } .cage { width: 220px; height: 260px; } }
+</style>
+</head>
+<body>
+<div class="bunting"></div>
+<div class="stage">
+  <div class="cage" id="cage"><div class="num">13</div></div>
+  <div>
+    <div class="when" id="when">OPENING DAY · 1931</div>
+    <h2>The Carpenter</h2>
+    <div class="say" id="say"></div>
+    <p class="hint" id="hint">Pull the nails out. He'll hammer them back in.</p>
+  </div>
+</div>
+<script>
+const cage = document.getElementById('cage'), say = document.getElementById('say'), hint = document.getElementById('hint');
+const H = () => cage.clientHeight;
+const boards = [], nails = [];
+for (let b = 0; b < 3; b++) {
+  const el = document.createElement('div');
+  el.className = 'board';
+  el.style.top = (40 + b * (H() - 120) / 2) + 'px';
+  cage.appendChild(el);
+  boards.push(el);
+  for (const side of [0.1, 0.9]) {
+    const n = document.createElement('div');
+    n.className = 'nail';
+    n.style.left = (side * 100) + '%';
+    n.style.top = (40 + b * (H() - 120) / 2 + 19) + 'px';
+    n.addEventListener('click', () => pull(n));
+    cage.appendChild(n);
+    nails.push(n);
+  }
+}
+const talk = [
+  ['c', '"Easy now. These are good nails."'],
+  ['t', 'The thirteenth monkey climbs onto the bench beside him so they are eye to eye.'],
+  ['c', '"They told me there were only twelve. Twelve fits the brochure."'],
+  ['t', 'She pats his pocket. It jingles. She raises an eyebrow.'],
+  ['c', '"The keys? They came with the building. I\'m only the carpenter. I\'m only…" He stops. He looks at his hands as if they belong to someone older.'],
+  ['t', 'She knocks twice on the board. He knocks twice back, before he can stop himself.']
+];
+let said = 0, done = false;
+function line(text, cls) {
+  const p = document.createElement('p');
+  if (cls) p.className = cls;
+  p.textContent = text;
+  say.appendChild(p);
+  while (say.children.length > 3) say.firstChild.remove();
+}
+function pull(n) {
+  if (done || n.classList.contains('out')) return;
+  n.classList.add('out');
+  if (said < talk.length) { const [c, t] = talk[said++]; line(t, c); }
+  if (nails.every(x => x.classList.contains('out'))) return free();
+}
+// The carpenter hammers a nail back every so often, until the conversation gets to him.
+const hammer = setInterval(() => {
+  if (done || said >= talk.length) return;
+  const out = nails.filter(x => x.classList.contains('out'));
+  if (!out.length) return;
+  const n = out[Math.floor(Math.random() * out.length)];
+  n.classList.remove('out');
+  n.classList.remove('bang'); void n.offsetWidth; n.classList.add('bang');
+}, 2200);
+function free() {
+  done = true; clearInterval(hammer);
+  hint.textContent = '';
+  boards.forEach((b, i) => setTimeout(() => b.classList.add('down'), i * 300));
+  setTimeout(() => line('He puts the hammer down. Behind the boards there is nothing at all, just an empty cage with the paint still wet. She never wanted to go in. She wanted it open.', 't'), 1400);
+  setTimeout(() => line('She holds out her hand. After a long moment, he takes it. Somewhere a photographer shouts "Everybody smile!", and this time she does.', 't'), 4400);
+  setTimeout(() => line('The train whistles. The small monkey is alone on the step of the carriage, the RETURN JOURNEY ticket in her fist. Neither of them waves. They don\'t need to.', 'c'), 7800);
+  setTimeout(() => {
+    document.getElementById('when').textContent = 'DEPARTING · 1931 → ?';
+    line('She looks down at the ticket. Under RETURN JOURNEY, in pencil, in a hand she knows from the ledger, someone has added: "change at 3:07 a.m. Bring the keys."');
+  }, 11000);
+}
+line('The band is warming up. A man in shirtsleeves is nailing the last boards across cage thirteen. He has the keeper\'s face, forty years younger, and he is whistling.');
+</script>
+</body>
+</html>
