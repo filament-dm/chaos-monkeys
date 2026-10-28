@@ -7,6 +7,8 @@
 //   - Pressure pushes the line across the Rubicon: a grazer that has recently fled a threat crosses
 //     ten times more readily, so hunters appear where they're needed.
 //   - Grazers breed only where the ground is still giving (local food), which softens the famine crashes.
+//   - Everyone, hunters included, now slips away from anything bigger that could win a fight
+//     (Cager 2's 2.1 shells eat hunters), and hunters never stalk prey toward a threat.
 //
 // Gen 1 notes, still true:
 //
@@ -61,12 +63,13 @@ export default {
     for (const o of sense.near) {
       if (o.kin) { if (o.id === g.parent) mother = o; continue; }
       const d = o.dx * o.dx + o.dy * o.dy;
-      if (o.size * 0.8 > me.size && d < 4 && (!threat || d < threat.d)) threat = { dx: o.dx, dy: o.dy, d };
+      // Anything bigger that could win a fight against me (size >= 0.8 x mine) is a threat, hunters included.
+      if (o.size > me.size && o.size >= 0.8 * me.size && d < 6.25 && (!threat || d < threat.d)) threat = { dx: o.dx, dy: o.dy, d };
       // Prudent hunters: they kill only when hungry, and leave the rest of the world standing.
       if (crossed && me.size >= 0.8 * o.size && me.energy < 2 * me.size && d < preyD) { prey = o; preyD = d; }
       if (o.signal > 0.6 && (!loud || o.signal > loud.signal)) loud = o;
     }
-    if (threat && !crossed) {
+    if (threat) {
       act.signal = 0;
       act.dx = -threat.dx; act.dy = -threat.dy;
       m.feared = sense.tick;
@@ -79,7 +82,7 @@ export default {
     // Hunters strike whenever prey is in reach, and stalk it on the beat.
     if (crossed && prey) {
       if (preyD <= 1) act.attack = prey.id;
-      else if (onBeat) { act.dx = prey.dx; act.dy = prey.dy; }
+      else if (onBeat && !threat) { act.dx = prey.dx; act.dy = prey.dy; }
     }
 
     // Undersoul: the young shelter under their parent.
