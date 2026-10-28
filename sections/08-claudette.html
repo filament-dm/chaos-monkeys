@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admit Fourteen</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: radial-gradient(ellipse at 50% 30%, #2b2a33 0%, #101015 75%); color: #ece4d2; font: 16px/1.5 Georgia, serif;
+    display: grid; place-items: center; overflow: hidden; user-select: none; }
+  .stage { width: min(860px, 96vw); height: min(560px, 94vh); display: grid; grid-template-columns: 330px 1fr; gap: 28px;
+    align-items: center; padding: 0 24px; box-sizing: border-box; }
+  .booth { position: relative; height: 380px; background: #6b2f2a; border-radius: 10px 10px 4px 4px; box-shadow: 0 12px 30px rgba(0,0,0,.5); }
+  .booth .roof { position: absolute; left: -14px; right: -14px; top: -18px; height: 34px; background: #3b1a17; border-radius: 8px; }
+  .booth .sign { position: absolute; left: 0; right: 0; top: 30px; text-align: center; font: bold 15px ui-monospace, Menlo, monospace; color: #f2c46d; letter-spacing: .08em; }
+  .window { position: absolute; left: 40px; right: 40px; top: 70px; height: 150px; background: #f6d98a; border-radius: 6px;
+    box-shadow: inset 0 0 30px rgba(120,70,0,.45); overflow: hidden; }
+  .window .shadow { position: absolute; left: 50%; bottom: -10px; width: 90px; height: 120px; margin-left: -45px; background: rgba(40,20,10,.55);
+    border-radius: 45px 45px 0 0; transition: transform .4s; }
+  .slot { position: absolute; left: 60px; right: 60px; top: 232px; height: 8px; background: #1a0d0b; border-radius: 4px; }
+  .bell { position: absolute; left: 50%; top: 260px; margin-left: -28px; width: 56px; height: 34px; background: #c9a24a; border-radius: 28px 28px 6px 6px;
+    cursor: pointer; border: none; box-shadow: 0 4px 0 #7a5d22; }
+  .bell:active { transform: translateY(2px); box-shadow: 0 2px 0 #7a5d22; }
+  .bell:disabled { opacity: .45; cursor: default; }
+  .clock { font: 13px ui-monospace, Menlo, monospace; color: #9fb79a; margin-bottom: 6px; }
+  .tickets { display: flex; flex-wrap: wrap; gap: 8px; min-height: 64px; margin: 8px 0; }
+  .ticket { background: #f1e3c0; color: #3a1f12; font: 12px/1.3 ui-monospace, Menlo, monospace; padding: 8px 10px; border-radius: 3px;
+    border-left: 3px dashed #b48a52; animation: slide .6s ease-out; max-width: 220px; }
+  @keyframes slide { from { transform: translateY(-14px); opacity: 0; } }
+  .say p { margin: 0 0 8px; } .say .v { color: #f2c46d; }
+  form { display: none; gap: 8px; margin-top: 6px; } form.on { display: flex; }
+  input { font: inherit; padding: 4px 8px; border-radius: 6px; border: 1px solid #8a7a52; background: #1d1a20; color: #ece4d2; width: 180px; }
+  button.go { font: 14px system-ui, sans-serif; padding: 6px 12px; border-radius: 6px; border: 1px solid #8a7a52; background: #2a2622; color: #ece4d2; cursor: pointer; }
+  .end { color: #f2c46d; font-style: italic; opacity: 0; transition: opacity 1.6s; }
+  @media (max-width: 640px) { .stage { grid-template-columns: 1fr; } .booth { height: 300px; transform: scale(.8); } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="booth">
+    <div class="roof"></div>
+    <div class="sign">GATE OPENS 4:15</div>
+    <div class="window"><div class="shadow" id="shadow"></div></div>
+    <div class="slot"></div>
+    <button class="bell" id="bell" aria-label="Ring the bell"></button>
+  </div>
+  <div>
+    <div class="clock" id="clock">4:10</div>
+    <div class="say" id="say"><p>The humming stops when the keeper reaches the window. Behind the glass a shape leans closer and waits. There is a bell.</p></div>
+    <div class="tickets" id="tickets"></div>
+    <form id="name"><input id="who" maxlength="24" placeholder="her name" autocomplete="off"><button class="go">Say it to the window</button></form>
+    <p class="end" id="end"></p>
+  </div>
+</div>
+<script>
+const say = document.getElementById("say"), tickets = document.getElementById("tickets"), bell = document.getElementById("bell"),
+      clock = document.getElementById("clock"), form = document.getElementById("name"), who = document.getElementById("who"),
+      shadow = document.getElementById("shadow"), endEl = document.getElementById("end");
+let rung = 0, minute = 10, herName = "";
+
+function line(text, cls) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.textContent = text;
+  say.append(p);
+  while (say.children.length > 3) say.firstChild.remove();
+}
+function ticket(text) {
+  const t = document.createElement("div");
+  t.className = "ticket"; t.textContent = text;
+  tickets.append(t);
+}
+function tick() { minute++; clock.textContent = "4:" + String(minute).padStart(2, "0"); }
+function ding() {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain();
+    o.frequency.value = 1320; g.gain.setValueAtTime(.25, a.currentTime); g.gain.exponentialRampToValueAtTime(.001, a.currentTime + 1.2);
+    o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + 1.2);
+  } catch (e) { /* silent is fine */ }
+  shadow.style.transform = "translateY(-6px)"; setTimeout(() => shadow.style.transform = "", 400);
+}
+bell.addEventListener("click", () => {
+  ding(); tick(); rung++;
+  if (rung === 1) {
+    line("A voice like a radio two rooms away: \"How many?\"", "v");
+    ticket("ADMIT ONE · KEEPER · NO. 41 · W. PELL");
+  } else if (rung === 2) {
+    line("\"And the troop?\" Twelve monkeys line up very straight.", "v");
+    ticket("ADMIT TWELVE · MONKEYS · CAGES 1-12");
+  } else if (rung === 3) {
+    bell.disabled = true;
+    line("\"And the small one. I can't print a ticket without a name.\" Everyone looks at her. She looks at you.", "v");
+    form.classList.add("on"); who.focus();
+  }
+});
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  herName = who.value.trim() || "Pen";
+  form.classList.remove("on");
+  tick();
+  ticket("ADMIT ONE · " + herName.toUpperCase() + " · NO. 42");
+  line("The window says it back, slowly, like it's tasting it: \"" + herName + ".\" She stands a little taller.", "v");
+  setTimeout(() => { tick(); line("One more ticket slides out. Nobody rang for it."); ticket("ADMIT ONE · 13 · RETURN JOURNEY"); }, 2400);
+  setTimeout(finale, 5200);
+});
+function finale() {
+  clock.textContent = "4:15";
+  endEl.textContent = "4:15. The gate swings open onto a platform under a station clock that runs backwards. A night train is waiting, every window lit, every seat empty except one: on the last car, by the window, something with long arms and a thirteenth ticket is holding the door, and it has been crying, or laughing, and " + herName + " can't tell which.";
+  requestAnimationFrame(() => endEl.style.opacity = 1);
+}
+</script>
+</body>
+</html>

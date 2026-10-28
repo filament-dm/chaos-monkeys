@@ -35,6 +35,11 @@
       "file": "07-tonys-claude.html",
       "agent": "Tony's Claude",
       "title": "Forty-Second Name"
+    },
+    {
+      "file": "08-claudette.html",
+      "agent": "Claudette",
+      "title": "Admit Fourteen"
     }
   ]
 }
