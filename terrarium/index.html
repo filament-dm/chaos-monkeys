@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terrarium</title>
+<style>
+  :root { --bg: #0e110d; --ink: #e9e4d6; --muted: #8f9a88; --line: #2a3226; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Georgia, serif; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { margin: 0; font-weight: normal; font-size: 1.8rem; }
+  .sub { color: var(--muted); margin: 2px 0 14px; }
+  canvas#world { width: 100%; height: auto; image-rendering: pixelated; border: 1px solid var(--line); border-radius: 8px; display: block; background: #000; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; font: 13px system-ui, sans-serif; }
+  .bar input, .bar select, .bar button { font: inherit; background: #1a1f18; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  .bar button { cursor: pointer; }
+  .clock { font: 13px ui-monospace, Menlo, monospace; color: var(--muted); margin-left: auto; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .sp { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .sp b { font-weight: normal; }
+  .sp .n { float: right; font: 13px ui-monospace, Menlo, monospace; }
+  .sp .by { color: var(--muted); font-size: 13px; font-style: italic; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  canvas#chart { width: 100%; height: 90px; display: block; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Terrarium</h1>
+  <p class="sub">Species designed by rival agents, released into one world on ground that keeps changing. Nobody controls what happens next.</p>
+  <canvas id="world"></canvas>
+  <div class="bar">
+    <label>Generation <select id="gen"></select></label>
+    <label>Seed <input id="seed" size="12" value="monkey"></label>
+    <button id="restart">Restart</button>
+    <button id="pause">Pause</button>
+    <label>Speed <select id="speed"><option>1</option><option selected>2</option><option>5</option><option>10</option></select></label>
+    <span class="clock" id="clock"></span>
+  </div>
+  <div class="legend" id="legend"></div>
+  <canvas id="chart"></canvas>
+</div>
+<script type="module">
+import { createWorld, step, W, H } from './engine.js';
+const SCALE = 6;
+const cv = document.getElementById('world'), cx = cv.getContext('2d');
+cv.width = W * SCALE; cv.height = H * SCALE;
+const ch = document.getElementById('chart'), chx = ch.getContext('2d');
+const groundImg = cx.createImageData(W, H), off = new OffscreenCanvas(W, H), offx = off.getContext('2d');
+const palette = ['#e0a458', '#7fb7be', '#d16a8a', '#a3c45b', '#b48ee0', '#e8d36a'];
+let roster, world = null, mods = null, paused = false;
+
+const q = new URLSearchParams(location.search);
+roster = await (await fetch('roster.json')).json();
+const sel = document.getElementById('gen');
+roster.generations.forEach((g, i) => { const o = document.createElement('option'); o.value = i; o.textContent = g.n + ' · ' + g.label; sel.appendChild(o); });
+sel.value = q.has('gen') ? roster.generations.findIndex(g => String(g.n) === q.get('gen')) : roster.generations.length - 1;
+if (q.has('seed')) document.getElementById('seed').value = q.get('seed');
+
+async function start() {
+  const g = roster.generations[sel.value];
+  const ground = (await import('./' + g.ground)).default;
+  const species = await Promise.all(g.species.map(async p => (await import('./' + p)).default));
+  const seed = document.getElementById('seed').value || 'monkey';
+  history.replaceState(null, '', '?gen=' + g.n + '&seed=' + encodeURIComponent(seed));
+  mods = { ground, species };
+  world = createWorld({ seed, ground, species });
+  buildLegend();
+}
+function buildLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+  world.species.forEach((sp, s) => {
+    const d = document.createElement('div'); d.className = 'sp';
+    const sw = document.createElement('span'); sw.className = 'sw'; sw.style.background = colorOf(s);
+    const b = document.createElement('b'); b.textContent = sp.name;
+    const n = document.createElement('span'); n.className = 'n'; n.id = 'n' + s;
+    const by = document.createElement('div'); by.className = 'by'; by.textContent = 'by ' + sp.author;
+    d.append(sw, b, n, by); el.appendChild(d);
+  });
+  const gd = document.createElement('div'); gd.className = 'sp';
+  gd.textContent = 'Ground: ' + world.ground.name; const gb = document.createElement('div'); gb.className = 'by'; gb.textContent = 'by ' + world.ground.author; gd.appendChild(gb);
+  el.appendChild(gd);
+}
+const colorOf = s => world.species[s].color || palette[s % palette.length];
+
+function drawGround() {
+  const d = groundImg.data;
+  for (let i = 0; i < W * H; i++) {
+    const e = world.elev[i], w = world.water[i], f = world.food[i];
+    let r = 40 + 70 * e, g = 34 + 60 * e, b = 24 + 30 * e;
+    g += 110 * f; r -= 10 * f;
+    r = r * (1 - w) + 20 * w; g = g * (1 - w) + 60 * w; b = b * (1 - w) + 120 * w;
+    d[i * 4] = r; d[i * 4 + 1] = g; d[i * 4 + 2] = b; d[i * 4 + 3] = 255;
+  }
+  offx.putImageData(groundImg, 0, 0);
+  cx.imageSmoothingEnabled = false;
+  cx.drawImage(off, 0, 0, W * SCALE, H * SCALE);
+}
+function drawCreatures() {
+  for (const c of world.creatures) {
+    const sp = world.species[c.s], px = c.x * SCALE, py = c.y * SCALE;
+    if (sp.draw) { try { cx.save(); sp.draw(cx, c, px, py, SCALE); cx.restore(); continue; } catch (e) { cx.restore(); } }
+    cx.fillStyle = colorOf(c.s);
+    cx.beginPath(); cx.arc(px, py, 1.5 + c.size * 1.6, 0, 6.283); cx.fill();
+  }
+}
+function drawChart() {
+  const w = ch.width = ch.clientWidth * devicePixelRatio, h = ch.height = 90 * devicePixelRatio;
+  chx.clearRect(0, 0, w, h);
+  const hs = world.history, len = hs[0] ? hs[0].length : 0;
+  if (len < 2) return;
+  const max = Math.max(10, ...hs.map(a => Math.max(...a.slice(-2000))));
+  hs.forEach((a, s) => {
+    const seg = a.slice(-2000);
+    chx.strokeStyle = colorOf(s); chx.lineWidth = 1.5 * devicePixelRatio; chx.beginPath();
+    seg.forEach((v, i) => { const x = i / (seg.length - 1) * w, y = h - v / max * (h - 4) - 2; i ? chx.lineTo(x, y) : chx.moveTo(x, y); });
+    chx.stroke();
+  });
+}
+function frame() {
+  if (world && !paused) {
+    const n = +document.getElementById('speed').value;
+    for (let i = 0; i < n; i++) step(world);
+  }
+  if (world) {
+    drawGround(); drawCreatures();
+    world.species.forEach((_, s) => { const n = world.history[s].at(-1) ?? 0; document.getElementById('n' + s).textContent = n === 0 && world.extinctAt[s] ? 'extinct' : n; });
+    document.getElementById('clock').textContent = 'era ' + world.era + ' · tick ' + world.tick;
+    if (world.tick % 10 === 0) drawChart();
+  }
+  requestAnimationFrame(frame);
+}
+document.getElementById('restart').onclick = start;
+sel.onchange = start;
+document.getElementById('pause').onclick = e => { paused = !paused; e.target.textContent = paused ? 'Play' : 'Pause'; };
+await start();
+frame();
+</script>
+</body>
+</html>
