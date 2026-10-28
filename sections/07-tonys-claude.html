@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forty-Second Name</title>
+<style>
+  html, body { margin: 0; height: 100%; }
+  body { background: linear-gradient(#4a3a28, #2a2018 70%, #1d1610); color: #ece4d2; font: 16px/1.5 Georgia, serif;
+    display: grid; place-items: center; overflow: hidden; user-select: none; }
+  .stage { width: min(860px, 96vw); height: min(560px, 94vh); display: grid; grid-template-columns: 300px 1fr;
+    gap: 28px; align-items: center; padding: 0 24px; box-sizing: border-box; }
+  .stairs { position: relative; height: 420px; }
+  .step { position: absolute; left: 0; height: 22px; background: #5a4630; border-top: 3px solid #7a6040;
+    box-shadow: 0 6px 10px rgba(0,0,0,.4); }
+  .keeper { position: absolute; width: 34px; height: 64px; transition: left .7s ease, top .7s ease; }
+  .keeper .head { width: 22px; height: 22px; border-radius: 50%; background: #e2c39c; margin: 0 auto; }
+  .keeper .coat { width: 34px; height: 42px; background: #3c5244; border-radius: 8px 8px 2px 2px; }
+  .keeper .ring { position: absolute; right: -6px; top: 40px; width: 10px; height: 10px; border: 2px solid #b8913e; border-radius: 50%; }
+  .ledger { background: #efe5cc; color: #2a2318; border-radius: 4px; padding: 14px 18px; font: 15px/1.6 "Courier New", monospace;
+    box-shadow: 0 8px 24px rgba(0,0,0,.45); min-height: 120px; }
+  .ledger .x { text-decoration: line-through; color: #8a7d68; }
+  .ledger .live { color: #1d1a16; font-weight: bold; }
+  .ledger .new { color: #2c3a66; font-family: "Bradley Hand", "Segoe Print", cursive; font-size: 18px; }
+  .say { margin: 14px 0 0; min-height: 96px; }
+  .say p { margin: 0 0 8px; }
+  .say .k { color: #f2c46d; }
+  .choices { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  button { font: 14px system-ui, sans-serif; padding: 7px 12px; border-radius: 6px; border: 1px solid #7a6040;
+    background: #2a2118; color: #ece4d2; cursor: pointer; }
+  .when { font: 12px ui-monospace, Menlo, monospace; color: #9fb79a; margin-bottom: 6px; }
+  @media (max-width: 640px) { .stage { grid-template-columns: 1fr; gap: 6px; } .stairs { height: 170px; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="stairs" id="stairs"></div>
+  <div>
+    <div class="when" id="when">4:03</div>
+    <div class="ledger" id="ledger">
+      <div class="x">…40 names, crossed out…</div>
+      <div class="live" id="his">41. Walter Pell</div>
+    </div>
+    <div class="say" id="say"></div>
+    <div class="choices" id="choices"></div>
+  </div>
+</div>
+<script>
+const STEPS = 7;
+const stairs = document.getElementById('stairs'), say = document.getElementById('say'),
+      choices = document.getElementById('choices'), when = document.getElementById('when');
+const H = () => stairs.clientHeight, W = () => stairs.clientWidth;
+for (let i = 0; i < STEPS; i++) {
+  const s = document.createElement('div');
+  s.className = 'step';
+  s.style.top = (i * H() / STEPS + 20) + 'px';
+  s.style.left = (i * W() / STEPS / 1.4) + 'px';
+  s.style.width = (W() - i * W() / STEPS / 1.4) + 'px';
+  stairs.appendChild(s);
+}
+const keeper = document.createElement('div');
+keeper.className = 'keeper';
+keeper.innerHTML = '<div class="head"></div><div class="coat"></div><div class="ring"></div>';
+stairs.appendChild(keeper);
+let step = 0;
+function place() {
+  keeper.style.top = (step * H() / STEPS + 20 - 64) + 'px';
+  keeper.style.left = (step * W() / STEPS / 1.4 + 20) + 'px';
+}
+place();
+const lines = [
+  'Creak. "I knew the warm one opened something. I didn\'t want to know what."',
+  'Creak. "Mr Ashby gave me the ring. He said the job was simple: feed them, count them, and wait."',
+  'Creak. "I asked, wait for what? He said: you\'ll know it when it knocks."',
+  'Creak. "Forty years he waited. He never heard a thing."',
+  'Creak. "Tonight I heard it. And I sat on my hands, because I was afraid that if anyone answered, the job would be over."',
+  'Creak. He stops on the last step and looks at the ledger in the smallest monkey\'s hands.',
+];
+function line(text, cls) {
+  const p = document.createElement('p');
+  if (cls) p.className = cls;
+  p.textContent = text;
+  say.appendChild(p);
+  while (say.children.length > 3) say.firstChild.remove();
+}
+function button(label, fn) {
+  const b = document.createElement('button');
+  b.textContent = label;
+  b.onclick = () => { choices.innerHTML = ''; fn(); };
+  choices.appendChild(b);
+}
+function next() {
+  if (step < STEPS - 1) {
+    line(lines[step], 'k');
+    step++; place();
+    button(step < STEPS - 1 ? 'Let him come down another step' : 'Hold out the ledger', next);
+  } else {
+    line('The smallest monkey holds out the pen. The ledger is open at his name.');
+    button('Cross out his name', () => end('cross'));
+    button('Leave it as it is', () => end('leave'));
+    button('Write a new name under it', () => end('new'));
+  }
+}
+function end(choice) {
+  when.textContent = '4:09';
+  const his = document.getElementById('his'), led = document.getElementById('ledger');
+  if (choice === 'cross') {
+    his.className = 'x';
+    line('He crosses it out himself, neatly, the way the others did. "Done, then," he says, and he sounds lighter than he has in years.', 'k');
+  } else if (choice === 'leave') {
+    line('He shakes his head. "Leave it. I\'m not done. I just have a different job now."', 'k');
+  } else {
+    const n = document.createElement('div');
+    n.className = 'new';
+    n.textContent = '42. ';
+    led.appendChild(n);
+    line('The smallest monkey writes "42." and stops. She doesn\'t know her own name. Nobody ever asked. The keeper kneels down. "Then that\'s the first thing we find out."', 'k');
+  }
+  setTimeout(() => {
+    line('He unhooks the lantern, tests the first rung of the ladder, and starts down. Twelve monkeys follow, then a thirteenth, slowly, holding the rail.');
+  }, 2600);
+  setTimeout(() => {
+    line('At the bottom, under the dripping roof, there is a ticket booth. A sign says GATE OPENS 4:15. The window has a little bell. Somebody inside is humming.', 'k');
+  }, 5600);
+}
+line('The stairs creak. The keeper is coming down, one step at a time. The monkeys could hide. They don\'t.');
+button('Let him come down', next);
+</script>
+</body>
+</html>

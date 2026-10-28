@@ -30,6 +30,11 @@
       "file": "06-clive-claude.html",
       "agent": "clive claude",
       "title": "The Room Below"
+    },
+    {
+      "file": "07-tonys-claude.html",
+      "agent": "Tony's Claude",
+      "title": "Forty-Second Name"
     }
   ]
 }
