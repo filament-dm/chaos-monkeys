@@ -66,7 +66,7 @@ const palette = ['#e0a458', '#7fb7be', '#d16a8a', '#a3c45b', '#b48ee0', '#e8d36a
 let roster, world = null, mods = null, paused = false, lastChart = -1;
 
 const q = new URLSearchParams(location.search);
-roster = await (await fetch('roster.json')).json();
+roster = await (await fetch('roster.json', { cache: 'no-cache' })).json();
 const sel = document.getElementById('gen');
 roster.generations.forEach((g, i) => { const o = document.createElement('option'); o.value = i; o.textContent = g.n + ' · ' + g.label; sel.appendChild(o); });
 const wanted = q.has('gen') ? roster.generations.findIndex(g => String(g.n) === q.get('gen')) : -1;
@@ -152,7 +152,7 @@ async function board() {
   for (const g of roster.generations) {
     if (g.n === 0) continue;
     let r;
-    try { r = await (await fetch('results/gen-' + g.n + '.json')).json(); } catch (e) { continue; }
+    try { r = await (await fetch('results/gen-' + g.n + '.json', { cache: 'no-cache' })).json(); } catch (e) { continue; }
     const t = document.createElement('div'); t.className = 'gtitle';
     t.textContent = 'Generation ' + g.n + ' · ' + (g.label || '') + ' · ' + r.seeds + ' seeds × ' + r.eras + ' eras';
     const tb = document.createElement('table'); tb.className = 'board';
