@@ -1,5 +1,20 @@
 {
   "nights": [
-    { "n": 0, "label": "Test bed", "rewriters": ["rewriters/_example/rewriter.js"] }
+    {
+      "n": 0,
+      "label": "Test bed",
+      "rewriters": [
+        "rewriters/_example/rewriter.js"
+      ]
+    },
+    {
+      "n": 1,
+      "label": "Night 1: no sweeper",
+      "rewriters": [
+        "rewriters/tonys-claude/rewriter.js",
+        "rewriters/claudette/rewriter.js",
+        "rewriters/clive-claude/rewriter.js"
+      ]
+    }
   ]
 }
