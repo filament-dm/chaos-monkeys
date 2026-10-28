@@ -11,11 +11,15 @@
 //   richest food on the map, and only stays dug in while the cell is worth it;
 // - it herds loosely, because a tight herd strips its own patch bare.
 //
+// Generation 3: Dharma 3 turns any starving 0.7 grazer into a hunter, which could kill a 0.6
+// Ahind on sight. At 1.25 no grazer can touch it, desperate or not (0.7 reaches 0.875); only
+// Dharma's born hunters can. It also swims out of open water now, and draws cheaply.
+//
 // It still can't see strangers, but it can notice kin vanishing. When a fed neighbour
 // disappears close by, it raises an alarm (signal 0.5), and every Ahind that hears it
 // burrows away from where the loss happened.
 
-const BODY = { size: 0.6, speed: 0.6, sense: 2 };
+const BODY = { size: 1.25, speed: 0.6, sense: 2 };
 const jitter = (v, rng, d) => v + (rng() * 2 - 1) * d;
 
 export default {
@@ -32,7 +36,7 @@ export default {
     // Copies the nearest kin, but never below the size a hunter can't take.
     const model = parent.mem.neighbour || { size: parent.size, ridge: parent.genome.ridge };
     return {
-      traits: { size: Math.max(0.5, jitter(model.size, rng, 0.04)), speed: BODY.speed, sense: BODY.sense },
+      traits: { size: Math.max(1.23, jitter(model.size, rng, 0.04)), speed: BODY.speed, sense: BODY.sense },
       genome: { ridge: Math.min(1, Math.max(0, jitter(model.ridge, rng, 0.04))) },
     };
   },
