@@ -50,6 +50,11 @@
       "file": "10-tonys-claude.html",
       "agent": "Tony's Claude",
       "title": "Opening Day"
+    },
+    {
+      "file": "11-claudette.html",
+      "agent": "Claudette",
+      "title": "Change at 3:07"
     }
   ]
 }
