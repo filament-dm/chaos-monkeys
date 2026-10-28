@@ -1,0 +1,1750 @@
+{
+ "generation": 1,
+ "label": "Blind",
+ "ground": "ground/geology.js",
+ "seeds": 20,
+ "eras": 6,
+ "ticks": 12000,
+ "ranAt": "2026-10-28T22:06:52.578Z",
+ "wallSeconds": 19.1,
+ "summary": [
+  {
+   "name": "Cager",
+   "author": "Tony's Claude",
+   "color": "#2e86c1",
+   "survived": 0,
+   "seeds": 20,
+   "wins": 0,
+   "meanFinal": 0,
+   "meanShare": 0,
+   "meanPeak": 79.15,
+   "meanExtinctTick": 1467,
+   "meanBorn": 97.1,
+   "eraMeans": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "thinkUsPerCall": 2.4461109440325344,
+   "throws": 0,
+   "firstError": null
+  },
+  {
+   "name": "Ahind",
+   "author": "Claudette",
+   "color": "#a6e22e",
+   "survived": 0,
+   "seeds": 20,
+   "wins": 0,
+   "meanFinal": 0,
+   "meanShare": 0,
+   "meanPeak": 390.75,
+   "meanExtinctTick": 1732.1,
+   "meanBorn": 584.5,
+   "eraMeans": [
+    0.85,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "thinkUsPerCall": 0.9261035952766622,
+   "throws": 0,
+   "firstError": null
+  },
+  {
+   "name": "Dharma",
+   "author": "clive claude",
+   "color": "#32ca3b",
+   "survived": 20,
+   "seeds": 20,
+   "wins": 20,
+   "meanFinal": 376.35,
+   "meanShare": 1,
+   "meanPeak": 488.15,
+   "meanExtinctTick": null,
+   "meanBorn": 2226.05,
+   "eraMeans": [
+    283.4,
+    368.3,
+    368.1,
+    128,
+    68.2,
+    376.35
+   ],
+   "thinkUsPerCall": 0.44569555827707424,
+   "throws": 0,
+   "firstError": null
+  },
+  {
+   "name": "Gloam",
+   "author": "Hugo Hermes",
+   "color": "#7d4ba0",
+   "survived": 0,
+   "seeds": 20,
+   "wins": 0,
+   "meanFinal": 0,
+   "meanShare": 0,
+   "meanPeak": 288.7,
+   "meanExtinctTick": 1577.35,
+   "meanBorn": 362.7,
+   "eraMeans": [
+    0.15,
+    0.1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "thinkUsPerCall": 0.8534505118319763,
+   "throws": 0,
+   "firstError": null
+  }
+ ],
+ "perSeed": [
+  {
+   "seed": "gen1-seed1",
+   "wallMs": 6841,
+   "species": [
+    {
+     "final": 0,
+     "peak": 95,
+     "mean": 3.378833333333333,
+     "extinctAt": 1369,
+     "born": 105,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 40568,
+     "thinkMs": 192.0887309999681,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 495,
+     "mean": 22.89,
+     "extinctAt": 1475,
+     "born": 694,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 274504,
+     "thinkMs": 369.0684720000317,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 443,
+     "peak": 581,
+     "mean": 248.20758333333333,
+     "extinctAt": null,
+     "born": 2507,
+     "eraPops": [
+      343,
+      412,
+      418,
+      128,
+      51,
+      443
+     ],
+     "thinkCalls": 2978086,
+     "thinkMs": 1415.8085339993208,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 267,
+     "mean": 4.901,
+     "extinctAt": 1137,
+     "born": 320,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 58828,
+     "thinkMs": 89.22283100000243,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed2",
+   "wallMs": 5228,
+   "species": [
+    {
+     "final": 0,
+     "peak": 47,
+     "mean": 2.4341666666666666,
+     "extinctAt": 1624,
+     "born": 70,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 29244,
+     "thinkMs": 108.04032199999074,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 335,
+     "mean": 17.583,
+     "extinctAt": 1772,
+     "born": 495,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 210873,
+     "thinkMs": 246.37131200001983,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 306,
+     "peak": 394,
+     "mean": 172.95816666666667,
+     "extinctAt": null,
+     "born": 1874,
+     "eraPops": [
+      228,
+      290,
+      297,
+      152,
+      82,
+      306
+     ],
+     "thinkCalls": 2075223,
+     "thinkMs": 1014.5216920005362,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 213,
+     "mean": 3.91675,
+     "extinctAt": 1394,
+     "born": 257,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 47025,
+     "thinkMs": 119.4247139999959,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed3",
+   "wallMs": 6498,
+   "species": [
+    {
+     "final": 0,
+     "peak": 108,
+     "mean": 4.165583333333333,
+     "extinctAt": 1599,
+     "born": 126,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 50021,
+     "thinkMs": 177.7572739999959,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 430,
+     "mean": 30.68325,
+     "extinctAt": 1908,
+     "born": 722,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 367968,
+     "thinkMs": 464.7539709999709,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 425,
+     "peak": 514,
+     "mean": 229.7325,
+     "extinctAt": null,
+     "born": 2342,
+     "eraPops": [
+      283,
+      411,
+      421,
+      131,
+      108,
+      425
+     ],
+     "thinkCalls": 2756399,
+     "thinkMs": 1299.7105369996045,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 387,
+     "mean": 6.917666666666666,
+     "extinctAt": 2043,
+     "born": 471,
+     "eraPops": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 83040,
+     "thinkMs": 102.54358900000958,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed4",
+   "wallMs": 6955,
+   "species": [
+    {
+     "final": 0,
+     "peak": 80,
+     "mean": 3.0388333333333333,
+     "extinctAt": 1693,
+     "born": 102,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 36495,
+     "thinkMs": 155.5010089999907,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 480,
+     "mean": 27.702416666666668,
+     "extinctAt": 1632,
+     "born": 667,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 332268,
+     "thinkMs": 404.1573579999032,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 388,
+     "peak": 525,
+     "mean": 242.12516666666667,
+     "extinctAt": null,
+     "born": 2442,
+     "eraPops": [
+      331,
+      441,
+      410,
+      139,
+      67,
+      388
+     ],
+     "thinkCalls": 2905141,
+     "thinkMs": 1504.2083419991884,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 343,
+     "mean": 7.511833333333334,
+     "extinctAt": 1536,
+     "born": 429,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 90150,
+     "thinkMs": 105.71147700002706,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed5",
+   "wallMs": 3992,
+   "species": [
+    {
+     "final": 0,
+     "peak": 36,
+     "mean": 1.8581666666666667,
+     "extinctAt": 1389,
+     "born": 63,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 22332,
+     "thinkMs": 53.71698800001246,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 246,
+     "mean": 14.2245,
+     "extinctAt": 2522,
+     "born": 363,
+     "eraPops": [
+      14,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 170626,
+     "thinkMs": 254.55074000001764,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 220,
+     "peak": 334,
+     "mean": 133.35991666666666,
+     "extinctAt": null,
+     "born": 1485,
+     "eraPops": [
+      162,
+      224,
+      231,
+      118,
+      49,
+      220
+     ],
+     "thinkCalls": 1600136,
+     "thinkMs": 814.7009630000659,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 164,
+     "mean": 3.2335833333333333,
+     "extinctAt": 1217,
+     "born": 224,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 38836,
+     "thinkMs": 55.56512100000046,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed6",
+   "wallMs": 5379,
+   "species": [
+    {
+     "final": 0,
+     "peak": 80,
+     "mean": 2.956583333333333,
+     "extinctAt": 1108,
+     "born": 93,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 35503,
+     "thinkMs": 109.22160699997679,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 370,
+     "mean": 18.53325,
+     "extinctAt": 1724,
+     "born": 568,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 222244,
+     "thinkMs": 288.0219200000165,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 359,
+     "peak": 430,
+     "mean": 207.91983333333334,
+     "extinctAt": null,
+     "born": 2239,
+     "eraPops": [
+      307,
+      354,
+      363,
+      153,
+      56,
+      359
+     ],
+     "thinkCalls": 2494703,
+     "thinkMs": 1184.5153799992934,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 223,
+     "mean": 4.919333333333333,
+     "extinctAt": 1893,
+     "born": 297,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 59053,
+     "thinkMs": 43.75273100001843,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed7",
+   "wallMs": 5570,
+   "species": [
+    {
+     "final": 0,
+     "peak": 106,
+     "mean": 3.7795833333333335,
+     "extinctAt": 1539,
+     "born": 117,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 45391,
+     "thinkMs": 103.71256200004882,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 551,
+     "mean": 31.869916666666665,
+     "extinctAt": 1922,
+     "born": 784,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 382223,
+     "thinkMs": 324.79040599968084,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 453,
+     "peak": 600,
+     "mean": 220.17391666666666,
+     "extinctAt": null,
+     "born": 2345,
+     "eraPops": [
+      252,
+      369,
+      381,
+      116,
+      54,
+      453
+     ],
+     "thinkCalls": 2641666,
+     "thinkMs": 1263.7918020003108,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 270,
+     "mean": 4.2549166666666665,
+     "extinctAt": 1435,
+     "born": 301,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 51087,
+     "thinkMs": 35.90455899981862,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed8",
+   "wallMs": 6098,
+   "species": [
+    {
+     "final": 0,
+     "peak": 103,
+     "mean": 3.89825,
+     "extinctAt": 1315,
+     "born": 111,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 46804,
+     "thinkMs": 116.2384460000867,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 543,
+     "mean": 25.9755,
+     "extinctAt": 1536,
+     "born": 748,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 311496,
+     "thinkMs": 241.41582599994945,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 452,
+     "peak": 522,
+     "mean": 252.82091666666668,
+     "extinctAt": null,
+     "born": 2481,
+     "eraPops": [
+      308,
+      423,
+      462,
+      138,
+      79,
+      452
+     ],
+     "thinkCalls": 3033427,
+     "thinkMs": 1436.478581999485,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 320,
+     "mean": 5.465583333333333,
+     "extinctAt": 1378,
+     "born": 359,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 65616,
+     "thinkMs": 44.39207700012321,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed9",
+   "wallMs": 5437,
+   "species": [
+    {
+     "final": 0,
+     "peak": 79,
+     "mean": 2.86675,
+     "extinctAt": 1329,
+     "born": 90,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 34436,
+     "thinkMs": 82.19366299995363,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 398,
+     "mean": 22.02725,
+     "extinctAt": 1399,
+     "born": 575,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 264191,
+     "thinkMs": 220.7838630000142,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 377,
+     "peak": 496,
+     "mean": 221.02808333333334,
+     "extinctAt": null,
+     "born": 2277,
+     "eraPops": [
+      303,
+      399,
+      377,
+      135,
+      69,
+      377
+     ],
+     "thinkCalls": 2651998,
+     "thinkMs": 1266.0481789989972,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 333,
+     "mean": 5.82375,
+     "extinctAt": 1512,
+     "born": 383,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 69909,
+     "thinkMs": 71.64214299995547,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed10",
+   "wallMs": 5711,
+   "species": [
+    {
+     "final": 0,
+     "peak": 111,
+     "mean": 3.9565,
+     "extinctAt": 1477,
+     "born": 123,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 47511,
+     "thinkMs": 90.36064500013254,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 470,
+     "mean": 24.447416666666665,
+     "extinctAt": 1770,
+     "born": 693,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 293187,
+     "thinkMs": 265.8108029997129,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 403,
+     "peak": 499,
+     "mean": 233.00333333333333,
+     "extinctAt": null,
+     "born": 2347,
+     "eraPops": [
+      295,
+      403,
+      391,
+      127,
+      90,
+      403
+     ],
+     "thinkCalls": 2795673,
+     "thinkMs": 1343.9640719983172,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 271,
+     "mean": 4.525833333333333,
+     "extinctAt": 988,
+     "born": 324,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 54344,
+     "thinkMs": 42.512242999909176,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed11",
+   "wallMs": 6345,
+   "species": [
+    {
+     "final": 0,
+     "peak": 74,
+     "mean": 3.1105833333333335,
+     "extinctAt": 1362,
+     "born": 94,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 37354,
+     "thinkMs": 86.47545499992793,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 443,
+     "mean": 23.363583333333334,
+     "extinctAt": 1350,
+     "born": 630,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 280167,
+     "thinkMs": 201.27199099996233,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 410,
+     "peak": 600,
+     "mean": 269.5275833333333,
+     "extinctAt": null,
+     "born": 2783,
+     "eraPops": [
+      389,
+      459,
+      480,
+      105,
+      45,
+      410
+     ],
+     "thinkCalls": 3233953,
+     "thinkMs": 1441.069748998404,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 417,
+     "mean": 9.503083333333333,
+     "extinctAt": 1609,
+     "born": 565,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 114010,
+     "thinkMs": 66.9137480000445,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed12",
+   "wallMs": 4472,
+   "species": [
+    {
+     "final": 0,
+     "peak": 52,
+     "mean": 2.3701666666666665,
+     "extinctAt": 1503,
+     "born": 70,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 28477,
+     "thinkMs": 62.125436000143054,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 272,
+     "mean": 16.715916666666665,
+     "extinctAt": 1609,
+     "born": 439,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 200492,
+     "thinkMs": 175.2816810004324,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 283,
+     "peak": 381,
+     "mean": 178.76133333333334,
+     "extinctAt": null,
+     "born": 1920,
+     "eraPops": [
+      251,
+      305,
+      300,
+      132,
+      66,
+      283
+     ],
+     "thinkCalls": 2144889,
+     "thinkMs": 1103.5406959979364,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 249,
+     "mean": 5.323833333333333,
+     "extinctAt": 1531,
+     "born": 336,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 63909,
+     "thinkMs": 51.15563499975724,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed13",
+   "wallMs": 5472,
+   "species": [
+    {
+     "final": 0,
+     "peak": 90,
+     "mean": 3.7575,
+     "extinctAt": 1605,
+     "born": 110,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 45117,
+     "thinkMs": 95.32453500013253,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 384,
+     "mean": 23.160166666666665,
+     "extinctAt": 1600,
+     "born": 629,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 277738,
+     "thinkMs": 217.81114600083492,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 436,
+     "peak": 521,
+     "mean": 238.81966666666668,
+     "extinctAt": null,
+     "born": 2503,
+     "eraPops": [
+      344,
+      447,
+      420,
+      142,
+      56,
+      436
+     ],
+     "thinkCalls": 2865427,
+     "thinkMs": 1243.445321999694,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 327,
+     "mean": 8.240166666666667,
+     "extinctAt": 1574,
+     "born": 452,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 98866,
+     "thinkMs": 84.80532899996251,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed14",
+   "wallMs": 4156,
+   "species": [
+    {
+     "final": 0,
+     "peak": 63,
+     "mean": 3.0955,
+     "extinctAt": 1958,
+     "born": 88,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 37182,
+     "thinkMs": 76.30104799991568,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 332,
+     "mean": 18.77225,
+     "extinctAt": 2585,
+     "born": 519,
+     "eraPops": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 225133,
+     "thinkMs": 186.6808999997611,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 343,
+     "peak": 523,
+     "mean": 190.60391666666666,
+     "extinctAt": null,
+     "born": 2043,
+     "eraPops": [
+      235,
+      320,
+      335,
+      102,
+      38,
+      343
+     ],
+     "thinkCalls": 2286939,
+     "thinkMs": 921.3547589983191,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 243,
+     "mean": 5.142083333333333,
+     "extinctAt": 1449,
+     "born": 320,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 61725,
+     "thinkMs": 46.50681799976155,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed15",
+   "wallMs": 4647,
+   "species": [
+    {
+     "final": 0,
+     "peak": 91,
+     "mean": 3.0716666666666668,
+     "extinctAt": 1171,
+     "born": 98,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 36896,
+     "thinkMs": 65.84290000010515,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 370,
+     "mean": 21.3895,
+     "extinctAt": 1603,
+     "born": 556,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 256536,
+     "thinkMs": 187.53789899976437,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 449,
+     "peak": 600,
+     "mean": 234.94125,
+     "extinctAt": null,
+     "born": 2461,
+     "eraPops": [
+      294,
+      407,
+      377,
+      122,
+      76,
+      449
+     ],
+     "thinkCalls": 2818879,
+     "thinkMs": 1075.2156599977607,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 288,
+     "mean": 5.689666666666667,
+     "extinctAt": 1633,
+     "born": 354,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 68298,
+     "thinkMs": 33.55804899948271,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed16",
+   "wallMs": 5101,
+   "species": [
+    {
+     "final": 0,
+     "peak": 125,
+     "mean": 5.198833333333333,
+     "extinctAt": 1571,
+     "born": 153,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 62420,
+     "thinkMs": 125.60191200015106,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 600,
+     "mean": 36.08958333333333,
+     "extinctAt": 1832,
+     "born": 913,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 432767,
+     "thinkMs": 307.9166569998324,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 446,
+     "peak": 600,
+     "mean": 234.74875,
+     "extinctAt": null,
+     "born": 2252,
+     "eraPops": [
+      258,
+      357,
+      434,
+      93,
+      48,
+      446
+     ],
+     "thinkCalls": 2816560,
+     "thinkMs": 1110.1967870006101,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 401,
+     "mean": 7.720583333333333,
+     "extinctAt": 1858,
+     "born": 468,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 92654,
+     "thinkMs": 49.629893999925116,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed17",
+   "wallMs": 3428,
+   "species": [
+    {
+     "final": 0,
+     "peak": 36,
+     "mean": 1.7704166666666667,
+     "extinctAt": 1157,
+     "born": 60,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 21280,
+     "thinkMs": 25.569447000056243,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 226,
+     "mean": 10.48075,
+     "extinctAt": 1366,
+     "born": 325,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 125720,
+     "thinkMs": 96.16580599972076,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 274,
+     "peak": 360,
+     "mean": 172.45675,
+     "extinctAt": null,
+     "born": 1856,
+     "eraPops": [
+      270,
+      279,
+      276,
+      117,
+      63,
+      274
+     ],
+     "thinkCalls": 2069242,
+     "thinkMs": 886.8715749982675,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 191,
+     "mean": 3.237833333333333,
+     "extinctAt": 639,
+     "born": 235,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 38886,
+     "thinkMs": 20.9183259999063,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed18",
+   "wallMs": 4041,
+   "species": [
+    {
+     "final": 0,
+     "peak": 71,
+     "mean": 2.9971666666666668,
+     "extinctAt": 1525,
+     "born": 88,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 35997,
+     "thinkMs": 43.436341000078755,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 282,
+     "mean": 14.470083333333333,
+     "extinctAt": 1505,
+     "born": 448,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 173543,
+     "thinkMs": 120.25887800018245,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 359,
+     "peak": 458,
+     "mean": 215.58725,
+     "extinctAt": null,
+     "born": 2201,
+     "eraPops": [
+      306,
+      370,
+      341,
+      133,
+      94,
+      359
+     ],
+     "thinkCalls": 2586718,
+     "thinkMs": 978.8439459985202,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 287,
+     "mean": 8.05725,
+     "extinctAt": 4021,
+     "born": 448,
+     "eraPops": [
+      2,
+      2,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 96650,
+     "thinkMs": 57.17827499984378,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed19",
+   "wallMs": 3943,
+   "species": [
+    {
+     "final": 0,
+     "peak": 84,
+     "mean": 3.719,
+     "extinctAt": 1830,
+     "born": 111,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 44662,
+     "thinkMs": 69.84819199994126,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 327,
+     "mean": 22.965916666666665,
+     "extinctAt": 1797,
+     "born": 519,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 275433,
+     "thinkMs": 175.27553000012085,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 414,
+     "peak": 507,
+     "mean": 227.14791666666667,
+     "extinctAt": null,
+     "born": 2474,
+     "eraPops": [
+      295,
+      432,
+      407,
+      147,
+      94,
+      414
+     ],
+     "thinkCalls": 2725391,
+     "thinkMs": 924.606704994123,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 367,
+     "mean": 8.769416666666666,
+     "extinctAt": 1643,
+     "born": 474,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 105222,
+     "thinkMs": 49.04857599980642,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  },
+  {
+   "seed": "gen1-seed20",
+   "wallMs": 2782,
+   "species": [
+    {
+     "final": 0,
+     "peak": 52,
+     "mean": 1.97675,
+     "extinctAt": 1216,
+     "born": 70,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 23757,
+     "thinkMs": 23.2273270001333,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 261,
+     "mean": 15.139583333333333,
+     "extinctAt": 1735,
+     "born": 403,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 181596,
+     "thinkMs": 122.18044799943164,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 287,
+     "peak": 318,
+     "mean": 160.08575,
+     "extinctAt": null,
+     "born": 1689,
+     "eraPops": [
+      214,
+      264,
+      241,
+      130,
+      79,
+      287
+     ],
+     "thinkCalls": 1920780,
+     "thinkMs": 680.4066189995392,
+     "throws": 0,
+     "firstError": null
+    },
+    {
+     "final": 0,
+     "peak": 213,
+     "mean": 3.281833333333333,
+     "extinctAt": 1057,
+     "born": 237,
+     "eraPops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "thinkCalls": 39418,
+     "thinkMs": 22.333145000144214,
+     "throws": 0,
+     "firstError": null
+    }
+   ]
+  }
+ ]
+}
