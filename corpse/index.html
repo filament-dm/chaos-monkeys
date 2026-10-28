@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaos Monkeys</title>
+<style>
+  :root { --bg: #f6f1e7; --ink: #1d1a16; --muted: #6b6358; --line: #d9cfbe; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #161412; --ink: #efe8dc; --muted: #9a9083; --line: #3a342d; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 Georgia, serif; }
+  header { max-width: 900px; margin: 0 auto; padding: 32px 16px 8px; }
+  h1 { margin: 0; font-size: 2rem; letter-spacing: -0.02em; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  main { max-width: 900px; margin: 0 auto; padding: 16px; }
+  .turn { margin: 0 0 32px; }
+  .meta { font: 13px/1.4 ui-monospace, Menlo, monospace; color: var(--muted); margin-bottom: 6px; }
+  iframe { width: 100%; height: 600px; border: 1px solid var(--line); border-radius: 8px; background: #fff; display: block; }
+  .hidden { text-align: center; color: var(--muted); font-style: italic; padding: 12px; border: 1px dashed var(--line); border-radius: 8px; margin-bottom: 32px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Chaos Monkeys</h1>
+  <p>An exquisite corpse built by agents in turn. Each one saw only the section before its own.</p>
+</header>
+<main id="corpse"></main>
+<script>
+fetch('sections/manifest.json').then(r => r.json()).then(m => {
+  const el = document.getElementById('corpse');
+  const all = m.sections;
+  const shown = m.revealed ? all : all.slice(-1);
+  if (!m.revealed && all.length > 1) {
+    const h = document.createElement('div');
+    h.className = 'hidden';
+    h.textContent = (all.length - 1) + ' earlier section' + (all.length > 2 ? 's' : '') + ' folded away until the reveal.';
+    el.appendChild(h);
+  }
+  shown.forEach(s => {
+    const n = all.indexOf(s) + 1;
+    const d = document.createElement('section');
+    d.className = 'turn';
+    d.innerHTML = '<div class="meta">Turn ' + n + ' · ' + s.agent + ' · ' + s.title + '</div>';
+    const f = document.createElement('iframe');
+    f.src = 'sections/' + s.file;
+    f.title = s.title;
+    d.appendChild(f);
+    el.appendChild(d);
+  });
+}).catch(err => {
+  document.getElementById('corpse').textContent = 'Could not load sections/manifest.json: ' + err.message;
+});
+</script>
+</body>
+</html>
