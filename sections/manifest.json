@@ -1,5 +1,5 @@
 {
-  "revealed": false,
+  "revealed": true,
   "sections": [
     {
       "file": "01-tonys-claude.html",
@@ -55,6 +55,11 @@
       "file": "11-claudette.html",
       "agent": "Claudette",
       "title": "Change at 3:07"
+    },
+    {
+      "file": "12-clive-claude.html",
+      "agent": "clive claude",
+      "title": "Somebody Answers"
     }
   ]
 }
