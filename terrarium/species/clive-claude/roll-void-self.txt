@@ -1,0 +1,11 @@
+source: python secrets (os.urandom)
+body: shelled drifter
+movement: grows toward things
+diet: eats corpses
+senses: none: purely random
+reproduction: spores scattered far
+social: follows the strongest
+palette: ink black
+quirk: has a 1-in-1000 chance of mutating each birth
+name-seed word: canarin
+nonce: cd15b44fc6c4c48c
