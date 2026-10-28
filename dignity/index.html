@@ -30,7 +30,7 @@
   <div class="who" id="who"></div>
 </main>
 <script type="module">
-import { createWorld, step, W, H, GROUND, RIVER_TOP, HARBOR, BOAT_MASS } from './engine.js';
+import { createWorld, step, W, H, GROUND, RIVER_TOP, HARBOR, BOAT_MASS, NIGHT_TICKS } from './engine.js';
 
 const params = new URLSearchParams(location.search);
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
@@ -52,10 +52,19 @@ function begin() {
 }
 
 function draw() {
-  // Sky, hills (the Ozarks), the quay, the river.
+  // The sky runs through the night: dusk, deep night, then the first grey of dawn.
+  const p = Math.min(1, world.tick / NIGHT_TICKS), dark = Math.sin(Math.PI * Math.min(1, p * 1.3));
+  const mix = (a, b, t) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`;
   const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, '#2b3550'); sky.addColorStop(0.6, '#7d6a5a'); sky.addColorStop(1, '#3a3027');
+  sky.addColorStop(0, mix([43, 53, 80], [8, 10, 24], dark));
+  sky.addColorStop(0.6, mix([125, 106, 90], [30, 28, 44], dark));
+  sky.addColorStop(1, mix([58, 48, 39], [20, 16, 14], dark));
   ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+  // Stars come out as it gets dark, and a moon crosses.
+  ctx.fillStyle = `rgba(255,248,230,${0.8 * dark})`;
+  for (let k = 0; k < 90; k++) { const sx = (k * 383) % W, sy = (k * 157) % (RIVER_TOP - 150); ctx.fillRect(sx, sy, k % 7 ? 1 : 2, k % 7 ? 1 : 2); }
+  ctx.fillStyle = `rgba(245,238,215,${0.35 + 0.5 * dark})`;
+  ctx.beginPath(); ctx.arc(80 + p * (W - 160), 90 - 50 * Math.sin(Math.PI * p), 16, 0, 6.283); ctx.fill();
   ctx.fillStyle = '#3d4436';
   ctx.beginPath(); ctx.moveTo(0, RIVER_TOP - 40);
   for (let x = 0; x <= W; x += 40) ctx.lineTo(x, RIVER_TOP - 60 - 40 * Math.sin(x / 130) - 20 * Math.sin(x / 47));
@@ -64,6 +73,22 @@ function draw() {
   ctx.fillStyle = '#4a3f33'; ctx.fillRect(0, GROUND, W, H - GROUND);
   ctx.fillStyle = 'rgba(239,194,122,0.08)'; ctx.fillRect(HARBOR.x, 0, HARBOR.w, GROUND);
   ctx.fillStyle = '#7a6a55'; ctx.fillRect(HARBOR.x, GROUND - 2, HARBOR.w, 4);
+  // The portrait nobody was rolled to paint: the sweeper, after Lawrence. A tall figure in a red coat on the quay,
+  // leaning on his broom, looking back at the river and the town. Faint, behind everything.
+  ctx.save(); ctx.globalAlpha = 0.5; ctx.translate(HARBOR.x + 55, GROUND); ctx.scale(1.25, 1.25);
+  ctx.fillStyle = '#9b2f25';
+  ctx.beginPath(); ctx.moveTo(-26, -150); ctx.quadraticCurveTo(-40, -70, -34, 0); ctx.lineTo(18, 0); ctx.quadraticCurveTo(26, -80, 16, -150); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#e7c9a8'; ctx.beginPath(); ctx.ellipse(-6, -170, 13, 17, -0.15, 0, 6.283); ctx.fill();
+  ctx.fillStyle = '#2a1d14'; ctx.beginPath(); ctx.ellipse(-4, -183, 15, 8, -0.2, 0, 6.283); ctx.fill();
+  ctx.fillStyle = '#e8e2d4'; ctx.beginPath(); ctx.moveTo(-14, -150); ctx.lineTo(4, -150); ctx.lineTo(-4, -128); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#6b5236'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(26, -120); ctx.lineTo(44, 0); ctx.stroke();
+  ctx.fillStyle = '#8a7350'; ctx.beginPath(); ctx.moveTo(34, 0); ctx.lineTo(56, 0); ctx.lineTo(50, -14); ctx.lineTo(40, -14); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // A lamp on the quay.
+  ctx.fillStyle = '#2d2620'; ctx.fillRect(W - 40, GROUND - 120, 3, 120);
+  const glow = ctx.createRadialGradient(W - 38, GROUND - 122, 0, W - 38, GROUND - 122, 120);
+  glow.addColorStop(0, `rgba(255,214,140,${0.25 + 0.35 * dark})`); glow.addColorStop(1, 'rgba(255,214,140,0)');
+  ctx.fillStyle = glow; ctx.fillRect(W - 160, GROUND - 240, 160, 240);
 
   // The letters. Color by where they came from.
   const tint = { town: '#e8dcc4', painting: '#e0796a', song: '#efc27a', engine: '#e8dcc4' };
