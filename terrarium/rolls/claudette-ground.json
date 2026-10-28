@@ -1,0 +1,39 @@
+{
+ "catastrophe_kinds": [
+  "ash winter",
+  "rift",
+  "rift"
+ ],
+ "catastrophes": [
+  2,
+  4,
+  8
+ ],
+ "climates": [
+  "monsoon",
+  "monsoon",
+  "monsoon",
+  "drought",
+  "ice",
+  "monsoon",
+  "volcanic",
+  "drought",
+  "drought"
+ ],
+ "era_length_ticks": [
+  300,
+  900,
+  900,
+  1200,
+  600,
+  600,
+  1200,
+  600,
+  450
+ ],
+ "eras": 9,
+ "nutrient_regen": 0.0148,
+ "salt": "46501192e3750d88912487dbb7d0be62",
+ "sea_level": 0.374,
+ "terrain_roughness": 0.356
+}

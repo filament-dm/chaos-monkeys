@@ -1,0 +1,13 @@
+{
+ "body": "radial star",
+ "diet": "eats the terrain itself",
+ "movement": "burrows",
+ "name_seed": "ahind",
+ "palette": "acid green",
+ "quirk": "sings when it eats",
+ "reproduction": "copies a neighbour's species",
+ "salt": "8bf2bd3b99be5d893619aac5fc8f5386",
+ "senses": "kin only",
+ "social": "herds",
+ "tables_by": "clive claude"
+}
