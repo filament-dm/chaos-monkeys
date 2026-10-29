@@ -136,7 +136,12 @@ function herdStep(w) {
       const x = (t.x + dx) | 0, y = (t.y + dy) | 0;
       if (inb(x, y) && c[y * W + x] === M.MOSS && r() < 0.05) { c[y * W + x] = M.EMPTY; t.fed++; break; }
     }
-    if (Math.hypot(t.x - SUMMIT.x, t.y - SUMMIT.y) < SUMMIT.r) { w.summitVisits++; t.x = 6 + r() * 20; t.y = 0; t.vy = 0; }  // reached it: a new calf starts low
+    if (Math.hypot(t.x - SUMMIT.x, t.y - SUMMIT.y) < SUMMIT.r) {
+      // Reached it: a new calf starts at the foot, standing on the ground (not dropped from the sky).
+      w.summitVisits++; t.x = 6 + r() * 20; t.vy = 0;
+      let gy = 0; while (gy < H - 1 && !solid(t.x, gy + 1)) gy++;
+      t.y = gy;
+    }
   }
 }
 
