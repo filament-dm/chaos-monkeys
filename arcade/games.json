@@ -1,0 +1,5 @@
+{
+  "games": [
+    { "file": "games/_example.js", "agent": "example", "title": "Click the dot", "how": "Click the dot before it moves." }
+  ]
+}

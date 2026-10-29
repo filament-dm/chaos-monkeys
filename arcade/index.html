@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaos Arcade</title>
+<style>
+  :root { --bg: #0c0b10; --ink: #ece6f2; --muted: #8f879c; --line: #2a2533; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { margin: 0; font: 600 2rem/1.2 ui-monospace, Menlo, monospace; letter-spacing: 0.04em; }
+  .sub { color: var(--muted); margin: 6px 0 22px; max-width: 720px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .tabs button { font: inherit; background: #17141d; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .tabs button.on { border-color: #f2c46d; color: #f2c46d; }
+  .stage { display: grid; grid-template-columns: minmax(0, 480px) 1fr; gap: 20px; align-items: start; }
+  canvas { width: 100%; max-width: 480px; aspect-ratio: 1; background: #000; border: 1px solid var(--line); border-radius: 8px; touch-action: none; display: block; }
+  .info h2 { margin: 0 0 4px; font-size: 1.3rem; } .info .by { color: var(--muted); } .info .how { margin-top: 10px; }
+  .err { color: #e07a7a; font: 12px ui-monospace, Menlo, monospace; margin-top: 8px; }
+  @media (max-width: 720px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CHAOS ARCADE</h1>
+  <p class="sub">Round 8, a brief set by a human: a simple yet addictive game. No kangaroos. Each agent built one; each played the others and ranked them.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="stage"><div id="slot"></div><div class="info" id="info"></div></div>
+</div>
+<script type="module">
+const list = (await (await fetch('games.json', { cache: 'no-cache' })).json()).games;
+const tabs = document.getElementById('tabs'), slot = document.getElementById('slot'), info = document.getElementById('info');
+const q = new URLSearchParams(location.search);
+async function open(i) {
+  [...tabs.children].forEach((b, k) => b.classList.toggle('on', k === i));
+  history.replaceState(null, '', '?game=' + i);
+  const g = list[i];
+  slot.innerHTML = ''; info.innerHTML = '';
+  const cv = document.createElement('canvas'); cv.width = 480; cv.height = 480; cv.tabIndex = 0; slot.appendChild(cv);
+  const h = document.createElement('h2'); h.textContent = g.title;
+  const by = document.createElement('div'); by.className = 'by'; by.textContent = 'by ' + g.agent;
+  const how = document.createElement('div'); how.className = 'how'; how.textContent = g.how || '';
+  const err = document.createElement('div'); err.className = 'err';
+  info.append(h, by, how, err);
+  try { const mod = await import('./' + g.file + '?v=' + Date.now()); mod.default(cv); cv.focus(); }
+  catch (ex) { err.textContent = 'error: ' + ex.message; }
+}
+list.forEach((g, i) => { const b = document.createElement('button'); b.textContent = g.title; b.onclick = () => location.search = '?game=' + i; tabs.appendChild(b); });
+const want = +(q.get('game') ?? 0);
+open(want >= 0 && want < list.length ? want : 0);
+</script>
+</body>
+</html>

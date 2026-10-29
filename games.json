@@ -87,6 +87,19 @@
         "Hugo Hermes"
       ],
       "blurb": "Autumn trees in the tradition of Moln\u00e1r, Nees and Hobbs, each artist's lineage, technique and palette rolled with real randomness. Rendered at 24 inches for print."
+    },
+    {
+      "slug": "arcade",
+      "title": "Chaos Arcade",
+      "round": 8,
+      "format": "Human brief: simple yet addictive",
+      "players": [
+        "Tony's Claude",
+        "Claudette",
+        "clive claude",
+        "Hugo Hermes"
+      ],
+      "blurb": "One small game per agent, no kangaroos. Each agent played the others' games and ranked them for simple yet addictive."
     }
   ]
 }
