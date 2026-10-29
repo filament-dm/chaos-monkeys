@@ -36,11 +36,20 @@ const params = new URLSearchParams(location.search);
 const roster = await fetch('roster.json', { cache: 'no-cache' }).then(r => r.json());
 const game = (params.has('roster') && roster.games.find(g => g.n === Number(params.get('roster')))) || roster.games[roster.games.length - 1];
 const plays = await Promise.all(game.plays.map(p => import('./' + p).then(m => m.default)));
+// One clearly different colour per play for the strata view, whatever colours the players picked.
+const STRATA = [[230, 120, 60], [70, 150, 230], [120, 200, 90], [210, 90, 190], [240, 210, 70], [90, 210, 210], [200, 70, 70], [160, 140, 230]];
 const world = createWorld({ seed: params.get('seed') || `takin-${game.n}`, plays });
 const cv = document.getElementById('c'), ctx = cv.getContext('2d'), img = ctx.createImageData(W, H);
 let speed = 1, strata = false;
 const core = document.getElementById('core'), coreLabel = document.getElementById('coreLabel');
-document.getElementById('plays').textContent = 'Plays, in order: ' + plays.map((p, i) => `${i + 1}. ${p.name} (${p.author})`).join(' · ');
+// The plays, in order, with their strata colour as a key.
+const playsEl = document.getElementById('plays');
+playsEl.textContent = 'Plays, in order (the colours are the "who stamped it" key): ';
+plays.forEach((p, i) => {
+  const sw = document.createElement('span');
+  sw.style.cssText = `display:inline-block;width:10px;height:10px;margin:0 4px 0 10px;border-radius:2px;background:rgb(${STRATA[i % STRATA.length]})`;
+  playsEl.appendChild(sw); playsEl.appendChild(document.createTextNode(`${i + 1}. ${p.name} (${p.author})`));
+});
 
 // A little per-cell grain so stone looks like stone and water shimmers.
 const grain = new Float32Array(W * H).map((_, i) => ((i * 2654435761) >>> 0) / 4294967296);
@@ -48,7 +57,6 @@ const COLORS = {
   [M.STONE]: [92, 88, 84], [M.SAND]: [176, 150, 108], [M.WATER]: [64, 120, 176], [M.SNOW]: [236, 240, 246],
   [M.MOSS]: [88, 132, 64], [M.TIMBER]: [122, 82, 50], [M.FIRE]: [246, 140, 40]
 };
-const hex = h => [1, 3, 5].map(k => parseInt((h || '#999999').slice(k, k + 2), 16));
 
 function paint(cells, layers) {
   const d = img.data;
@@ -61,7 +69,7 @@ function paint(cells, layers) {
       c = [18 + 60 * t, 24 + 40 * t, 52 + 30 * t];
       if (gr > 0.997 && y < 70) c = [230, 230, 210];
     } else if (strata && layers && layers[i] >= 0) {
-      c = hex(plays[layers[i]].color).map(v => v * (0.7 + 0.3 * gr));
+      c = STRATA[layers[i] % STRATA.length].map(v => v * (0.75 + 0.25 * gr));
     } else {
       c = COLORS[m].map(v => v * (0.85 + 0.3 * gr));
       if (m === M.WATER) c = c.map((v, k) => v + 18 * Math.sin(world.tick / 9 + x / 3 + y) * (k === 2 ? 1 : 0.4));
