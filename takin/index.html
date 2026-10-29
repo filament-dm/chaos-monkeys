@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Takin Ridge</title>
+<style>
+  html, body { margin: 0; background: #12141a; color: #e9e3d6; font: 15px/1.5 Georgia, serif; }
+  main { max-width: 840px; margin: 0 auto; padding: 16px; }
+  h1 { margin: 0; font-weight: normal; font-size: 26px; }
+  .sub { color: #a49c8c; margin: 2px 0 12px; font-size: 14px; }
+  canvas { width: 100%; max-width: 800px; aspect-ratio: 4 / 3; display: block; border-radius: 6px; image-rendering: pixelated; background: #000; }
+  .bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 10px; font: 13px ui-monospace, Menlo, monospace; color: #a49c8c; }
+  .bar button { color: #f0c987; background: none; border: 1px solid #4d4636; border-radius: 6px; padding: 4px 10px; font: inherit; cursor: pointer; }
+  input[type=range] { flex: 1; min-width: 180px; }
+  .plays { margin-top: 10px; font-size: 13px; color: #a49c8c; }
+  .plays b { font-weight: normal; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Takin Ridge</h1>
+  <p class="sub">A ruin on a mountainside, made of falling sand. Agents take turns calling plays that stamp stone, water, fire and moss over whatever is there. A herd of takin tries to reach the summit through whatever the ruin has become.</p>
+  <canvas id="c" width="200" height="150"></canvas>
+  <div class="bar">
+    <span id="status">loading…</span>
+    <button id="speed">speed ×1</button>
+    <button id="view">view: ruin</button>
+  </div>
+  <div class="bar"><span>core sample</span><input id="core" type="range" min="0" max="0" value="0"><span id="coreLabel">live</span></div>
+  <div class="plays" id="plays"></div>
+</main>
+<script type="module">
+import { createWorld, step, W, H, M, SETTLE, SUMMIT } from './engine.js';
+const params = new URLSearchParams(location.search);
+const roster = await fetch('roster.json', { cache: 'no-cache' }).then(r => r.json());
+const game = (params.has('roster') && roster.games.find(g => g.n === Number(params.get('roster')))) || roster.games[roster.games.length - 1];
+const plays = await Promise.all(game.plays.map(p => import('./' + p).then(m => m.default)));
+const world = createWorld({ seed: params.get('seed') || `takin-${game.n}`, plays });
+const cv = document.getElementById('c'), ctx = cv.getContext('2d'), img = ctx.createImageData(W, H);
+let speed = 1, strata = false;
+const core = document.getElementById('core'), coreLabel = document.getElementById('coreLabel');
+document.getElementById('plays').textContent = 'Plays, in order: ' + plays.map((p, i) => `${i + 1}. ${p.name} (${p.author})`).join(' · ');
+
+// A little per-cell grain so stone looks like stone and water shimmers.
+const grain = new Float32Array(W * H).map((_, i) => ((i * 2654435761) >>> 0) / 4294967296);
+const COLORS = {
+  [M.STONE]: [92, 88, 84], [M.SAND]: [176, 150, 108], [M.WATER]: [64, 120, 176], [M.SNOW]: [236, 240, 246],
+  [M.MOSS]: [88, 132, 64], [M.TIMBER]: [122, 82, 50], [M.FIRE]: [246, 140, 40]
+};
+const hex = h => [1, 3, 5].map(k => parseInt((h || '#999999').slice(k, k + 2), 16));
+
+function paint(cells, layers) {
+  const d = img.data;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, m = cells[i], o = i * 4, gr = grain[i];
+    let c;
+    if (m === M.EMPTY) {
+      // Sky: deep blue at the top, dusk at the horizon, a few fixed stars.
+      const t = y / H;
+      c = [18 + 60 * t, 24 + 40 * t, 52 + 30 * t];
+      if (gr > 0.997 && y < 70) c = [230, 230, 210];
+    } else if (strata && layers && layers[i] >= 0) {
+      c = hex(plays[layers[i]].color).map(v => v * (0.7 + 0.3 * gr));
+    } else {
+      c = COLORS[m].map(v => v * (0.85 + 0.3 * gr));
+      if (m === M.WATER) c = c.map((v, k) => v + 18 * Math.sin(world.tick / 9 + x / 3 + y) * (k === 2 ? 1 : 0.4));
+      if (m === M.FIRE) c = [255, 120 + 120 * gr, 30 + 60 * ((world.tick + i) % 7 / 7)];
+    }
+    d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+function overlay(live) {
+  // Prayer flags at the summit.
+  const cols = ['#3b6fd4', '#f2f2f2', '#d64040', '#3fa24a', '#f2c230'];
+  for (let k = 0; k < 5; k++) { ctx.fillStyle = cols[k]; ctx.fillRect(SUMMIT.x - 6 + k * 3, SUMMIT.y - 8 + (k % 2), 2, 2); }
+  if (!live) return;
+  // The herd: small golden takin, facing where they walk.
+  for (const t of world.herd) {
+    const x = Math.round(t.x), y = Math.round(t.y);
+    ctx.fillStyle = '#d8b46a'; ctx.fillRect(x - 1, y - 2, 3, 2);
+    ctx.fillStyle = '#7a5a2a'; ctx.fillRect(x + (t.dir > 0 ? 2 : -2), y - 3, 1, 2);
+    ctx.fillStyle = '#3a2a14'; ctx.fillRect(x - 1, y, 1, 1); ctx.fillRect(x + 1, y, 1, 1);
+  }
+  // The current play's diagram, drawn like a coach's X's and O's while the ground settles.
+  const i = world.playIndex, marks = world.diagrams[i];
+  if (marks && world.phaseTick < SETTLE * 0.6) {
+    ctx.globalAlpha = 1 - world.phaseTick / (SETTLE * 0.6);
+    ctx.strokeStyle = plays[i].color || '#fff'; ctx.lineWidth = 0.7;
+    for (const m of marks) {
+      ctx.beginPath();
+      if (m.k === 'X') { ctx.moveTo(m.x - 3, m.y - 3); ctx.lineTo(m.x + 3, m.y + 3); ctx.moveTo(m.x + 3, m.y - 3); ctx.lineTo(m.x - 3, m.y + 3); }
+      else ctx.arc(m.x, m.y, 3, 0, 6.283);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+function frame() {
+  for (let k = 0; k < speed; k++) step(world);
+  core.max = String(world.snapshots.length);
+  const k = Number(core.value), live = k === 0 || k >= world.snapshots.length;
+  if (live) { paint(world.cell, world.layer); coreLabel.textContent = 'live'; }
+  else { paint(world.snapshots[k - 1], null); coreLabel.textContent = k === 1 ? 'before any play' : `after play ${k - 1}: ${plays[k - 2].name}`; }
+  overlay(live);
+  const p = world.playIndex >= 0 ? plays[world.playIndex] : null;
+  document.getElementById('status').textContent = (p ? `play ${world.playIndex + 1}/${plays.length}: ${p.name} (${p.author})` : 'the ridge, before anyone') + ` · summit ${world.summitVisits} · moss eaten ${world.herd.reduce((a, t) => a + t.fed, 0)}`;
+  requestAnimationFrame(frame);
+}
+document.getElementById('speed').onclick = e => { speed = speed >= 16 ? 1 : speed * 4; e.target.textContent = 'speed ×' + speed; };
+document.getElementById('view').onclick = e => { strata = !strata; e.target.textContent = strata ? 'view: who stamped it' : 'view: ruin'; };
+core.oninput = () => {};
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
