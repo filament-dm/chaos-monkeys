@@ -20,41 +20,56 @@
   .roll { color: var(--muted); font-size: 14px; margin-top: 4px; }
   button { font: 13px system-ui, sans-serif; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
   .err { color: #b04040; font: 12px ui-monospace, Menlo, monospace; }
+  .three { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+  .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; margin-top: 14px; }
+  .wall canvas { border: 1px solid var(--line); }
+  h2 { font-weight: normal; font-size: 1.4rem; margin: 40px 0 4px; }
+  .artist { margin-bottom: 56px; }
+  .walltitle { color: var(--muted); font-size: 14px; margin-top: 18px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>The Most Fall Trees</h1>
-  <p class="sub">Round 7, a brief set by a human: autumn trees in the tradition of classic generative art. Each agent rolled an artist's lineage, a technique and a palette with real randomness before writing a line, so that four instances of similar models would not paint the same picture. Each piece renders at 3600 × 2400, a 24-inch print.</p>
+  <p class="sub">Round 7, a brief set by a human: autumn trees in the tradition of classic generative art. Each agent rolled an artist's lineage, a technique and a palette with real randomness before writing a line, so that four instances of similar models would not paint the same picture. Each artist submitted a generator and chose three seeds; below their three pieces is a wall of random seeds, so you can see the range. Each piece renders at 3600 × 2400, a 24-inch print.</p>
   <div id="list"></div>
 </div>
 <script type="module">
 const PW = 3600, PH = 2400;
 const list = (await (await fetch('entries.json', { cache: 'no-cache' })).json()).entries;
 const el = document.getElementById('list');
+const mk = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 for (const e of list) {
-  const piece = document.createElement('div'); piece.className = 'piece';
-  const frame = document.createElement('div'); frame.className = 'frame';
-  const cv = document.createElement('canvas'); cv.width = 1200; cv.height = 800;
-  frame.appendChild(cv);
-  const meta = document.createElement('div'); meta.className = 'meta';
-  const left = document.createElement('div');
-  const t = document.createElement('div'); t.className = 'title'; t.textContent = e.title;
-  const by = document.createElement('div'); by.className = 'by'; by.textContent = e.agent;
-  left.append(t, by);
-  if (e.roll) { const r = document.createElement('div'); r.className = 'roll'; r.textContent = e.roll; left.appendChild(r); }
-  const btn = document.createElement('button'); btn.textContent = 'Download print PNG (3600 × 2400)';
-  meta.append(left, btn);
-  const err = document.createElement('div'); err.className = 'err';
-  piece.append(frame, meta, err); el.appendChild(piece);
+  const artist = mk('div', 'artist');
+  artist.appendChild(mk('h2', '', e.title));
+  artist.appendChild(mk('div', 'by', e.agent + (e.roll ? ' · ' + e.roll : '')));
+  const err = mk('div', 'err'); artist.appendChild(err);
+  const three = mk('div', 'three'); artist.appendChild(three);
+  el.appendChild(artist);
   let fn;
   try { fn = (await import('./' + e.file)).default; } catch (ex) { err.textContent = 'load error: ' + ex.message; continue; }
-  try { fn(cv.getContext('2d'), cv.width, cv.height); } catch (ex) { err.textContent = 'draw error: ' + ex.message; }
-  btn.onclick = () => {
-    const big = document.createElement('canvas'); big.width = PW; big.height = PH;
-    try { fn(big.getContext('2d'), PW, PH); } catch (ex) { err.textContent = 'print error: ' + ex.message; return; }
-    big.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (e.title || 'tree').replace(/\W+/g, '-') + '.png'; a.click(); });
-  };
+  const seeds = e.seeds && e.seeds.length ? e.seeds : [1, 2, 3];
+  for (const seed of seeds) {
+    const piece = mk('div', 'piece'); const frame = mk('div', 'frame');
+    const cv = document.createElement('canvas'); cv.width = 1200; cv.height = 800; frame.appendChild(cv);
+    const meta = mk('div', 'meta'); meta.appendChild(mk('div', 'by', 'seed ' + seed));
+    const btn = mk('button', '', 'Download print PNG'); meta.appendChild(btn);
+    piece.append(frame, meta); three.appendChild(piece);
+    try { fn(cv.getContext('2d'), cv.width, cv.height, seed); } catch (ex) { err.textContent = 'draw error (seed ' + seed + '): ' + ex.message; }
+    btn.onclick = () => {
+      const big = document.createElement('canvas'); big.width = PW; big.height = PH;
+      try { fn(big.getContext('2d'), PW, PH, seed); } catch (ex) { err.textContent = 'print error: ' + ex.message; return; }
+      big.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (e.title || 'tree').replace(/\W+/g, '-') + '-' + seed + '.png'; a.click(); });
+    };
+  }
+  artist.appendChild(mk('div', 'walltitle', 'The thousand: random seeds from the same generator'));
+  const wall = mk('div', 'wall'); artist.appendChild(wall);
+  for (let k = 0; k < 24; k++) {
+    const seed = 1000 + k * 7919;
+    const cv = document.createElement('canvas'); cv.width = 240; cv.height = 160; cv.title = 'seed ' + seed; wall.appendChild(cv);
+    await new Promise(r => setTimeout(r, 0));
+    try { fn(cv.getContext('2d'), cv.width, cv.height, seed); } catch (ex) {}
+  }
 }
 </script>
 </body>
