@@ -1,10 +1,11 @@
 // The Turning, by Tony's Claude.
-// Rolled with `secrets` before any code: lineage Roman Verostko · technique flow field · palette 2 colours · seed 306893523.
+// Rolled with `secrets` before any code: lineage Roman Verostko · technique flow field · palette 2 colours.
+// A generator: each seed picks its own two inks, tree, wind side and field.
 // After Verostko's brush-plotter "pathways": every mark is a pen stroke that follows a flow field. Two inks on warm paper:
 // umber for the wood, vermilion for the leaves. The tree is caught mid-turn: full on the left, bare on the right,
 // and what it lost is drifting down and to the right, settling along the ground.
-export default (x, W, H) => {
-  let a = 306893523;
+export default (x, W, H, seed = 306893523) => {
+  let a = seed | 0;
   const rnd = () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   // Smooth value noise for the field.
   const G = 64, grid = Array.from({ length: G * G }, rnd);
@@ -16,8 +17,12 @@ export default (x, W, H) => {
   };
   const u = W / 1200;                                        // everything is designed at 1200 wide and scaled
   const field = (px, py, k) => noise(px / (180 * u), py / (180 * u)) * Math.PI * 4 * k;
-  const UMBER = '#2e1e14', VERM = '#c2411b';
-  x.fillStyle = '#f1e8d6'; x.fillRect(0, 0, W, H);
+  // Two inks per piece, drawn from a few pairs, and the wind can come from either side.
+  const INKS = [['#2e1e14', '#c2411b'], ['#1d2433', '#c98a2b'], ['#3a1a1a', '#d4a020'], ['#23301f', '#b8471f'], ['#2b2238', '#cf6a3a']];
+  const pick = INKS[Math.floor(rnd() * INKS.length)], UMBER = pick[0], VERM = pick[1];
+  const flip = rnd() < 0.5;                                // mirror the whole piece: the wind blows the other way
+  if (flip) { x.translate(W, 0); x.scale(-1, 1); }
+  x.fillStyle = ['#f1e8d6', '#efe6d2', '#f3ecdf'][Math.floor(rnd() * 3)]; x.fillRect(0, 0, W, H);
   x.lineCap = 'round';
 
   const stroke = (px, py, steps, len, angle, colour, width, alpha) => {
@@ -38,8 +43,8 @@ export default (x, W, H) => {
     grow(qx, qy, ang + 0.3 + rnd() * 0.3, len * (0.66 + rnd() * 0.1), depth + 1);
     if (rnd() < 0.3 && depth > 2) grow(qx, qy, ang + (rnd() - 0.5) * 0.4, len * 0.6, depth + 2);
   };
-  const baseX = W * 0.46, baseY = H * 0.86;
-  grow(baseX, baseY, -Math.PI / 2 - 0.04, 210 * u, 0);
+  const baseX = W * (0.38 + rnd() * 0.16), baseY = H * (0.82 + rnd() * 0.06);
+  grow(baseX, baseY, -Math.PI / 2 - 0.04 + (rnd() - 0.5) * 0.12, (180 + rnd() * 50) * u, 0);
   const crown = [];
   for (const [px, py, qx, qy, d] of limbs) {
     const dir = Math.atan2(qy - py, qx - px), segLen = Math.hypot(qx - px, qy - py);
@@ -80,4 +85,5 @@ export default (x, W, H) => {
     stroke(sx, sy, 22, 3.5, (ax, ay) => (field(ax, ay, 0.4) - Math.PI * 0.8) * 0.12, UMBER, 0.9, 0.35);
   }
   x.globalAlpha = 1;
+  if (flip) x.setTransform(1, 0, 0, 1, 0, 0);
 };

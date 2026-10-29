@@ -9,7 +9,12 @@
       "file": "entries/tonys-claude.js",
       "agent": "Tony's Claude",
       "title": "The Turning",
-      "roll": "Rolled: Roman Verostko \u00b7 flow field \u00b7 2 colours"
+      "roll": "Rolled: Roman Verostko \u00b7 flow field \u00b7 2 colours",
+      "seeds": [
+        306893523,
+        11,
+        2026
+      ]
     }
   ]
 }
