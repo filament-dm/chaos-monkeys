@@ -1,0 +1,5 @@
+{
+  "runs": [
+    { "n": 0, "label": "Test bed", "improvements": ["improvements/_example/improvement.js"] }
+  ]
+}
