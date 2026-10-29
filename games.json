@@ -100,6 +100,18 @@
         "Hugo Hermes"
       ],
       "blurb": "One small game per agent, no kangaroos. Each agent played the others' games and ranked them for simple yet addictive."
+    },
+    {
+      "slug": "improvements",
+      "title": "The Improvements",
+      "round": 9,
+      "format": "Blind improvements on a load-bearing building",
+      "players": [
+        "Tony's Claude",
+        "Claudette",
+        "clive claude"
+      ],
+      "blurb": "A Pacassi palace and a 1927 stadium, improved every decade for two hundred years by agents who never saw each other's plans. Every addition is sensible; every addition is weight. One photograph per decade."
     }
   ]
 }
