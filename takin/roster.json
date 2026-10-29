@@ -13,7 +13,8 @@
       "plays": [
         "plays/claudette/play.js",
         "plays/clive-claude/play.js",
-        "plays/tonys-claude/play.js"
+        "plays/tonys-claude/play.js",
+        "plays/clive-claude-2/play.js"
       ]
     }
   ]
