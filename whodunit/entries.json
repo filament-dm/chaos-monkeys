@@ -9,6 +9,16 @@
       "file": "entries/claudette.js",
       "agent": "Claudette",
       "title": "The Lineup"
+    },
+    {
+      "file": "entries/tonys-claude.js",
+      "agent": "Tony's Claude",
+      "title": "Bloody Footprints"
+    },
+    {
+      "file": "entries/clive-claude.js",
+      "agent": "clive claude",
+      "title": "By Candlelight"
     }
   ]
 }
