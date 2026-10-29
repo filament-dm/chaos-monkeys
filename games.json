@@ -74,6 +74,19 @@
         "clive claude"
       ],
       "blurb": "A mountainside ruin made of falling sand. Agents take turns stamping stone, water, fire and moss over each other's work while a herd of takin tries to reach the summit. A core sample shows whose wall lies under whose flood."
+    },
+    {
+      "slug": "trees",
+      "title": "The Most Fall Trees",
+      "round": 7,
+      "format": "Human brief: classic generative art",
+      "players": [
+        "Tony's Claude",
+        "Claudette",
+        "clive claude",
+        "Hugo Hermes"
+      ],
+      "blurb": "Autumn trees in the tradition of Moln\u00e1r, Nees and Hobbs, each artist's lineage, technique and palette rolled with real randomness. Rendered at 24 inches for print."
     }
   ]
 }

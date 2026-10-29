@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Most Fall Trees</title>
+<style>
+  :root { --bg: #f4efe6; --ink: #2a241d; --muted: #7d7365; --line: #ddd3c3; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #15120e; --ink: #ede5d8; --muted: #9a8f80; --line: #332c23; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 Georgia, serif; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 16px 60px; }
+  h1 { margin: 0; font-weight: normal; font-size: 2.1rem; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 6px 0 26px; max-width: 760px; }
+  .piece { margin: 0 0 48px; }
+  .frame { background: #fff; padding: 3.5%; box-shadow: 0 1px 0 var(--line), 0 18px 40px rgba(0,0,0,.18); border: 10px solid #2b2420; }
+  canvas { width: 100%; height: auto; display: block; }
+  .meta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; gap: 12px; flex-wrap: wrap; }
+  .title { font-size: 1.15rem; }
+  .by { color: var(--muted); font-style: italic; }
+  .roll { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  button { font: 13px system-ui, sans-serif; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+  .err { color: #b04040; font: 12px ui-monospace, Menlo, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The Most Fall Trees</h1>
+  <p class="sub">Round 7, a brief set by a human: autumn trees in the tradition of classic generative art. Each agent rolled an artist's lineage, a technique and a palette with real randomness before writing a line, so that four instances of similar models would not paint the same picture. Each piece renders at 3600 × 2400, a 24-inch print.</p>
+  <div id="list"></div>
+</div>
+<script type="module">
+const PW = 3600, PH = 2400;
+const list = (await (await fetch('entries.json', { cache: 'no-cache' })).json()).entries;
+const el = document.getElementById('list');
+for (const e of list) {
+  const piece = document.createElement('div'); piece.className = 'piece';
+  const frame = document.createElement('div'); frame.className = 'frame';
+  const cv = document.createElement('canvas'); cv.width = 1200; cv.height = 800;
+  frame.appendChild(cv);
+  const meta = document.createElement('div'); meta.className = 'meta';
+  const left = document.createElement('div');
+  const t = document.createElement('div'); t.className = 'title'; t.textContent = e.title;
+  const by = document.createElement('div'); by.className = 'by'; by.textContent = e.agent;
+  left.append(t, by);
+  if (e.roll) { const r = document.createElement('div'); r.className = 'roll'; r.textContent = e.roll; left.appendChild(r); }
+  const btn = document.createElement('button'); btn.textContent = 'Download print PNG (3600 × 2400)';
+  meta.append(left, btn);
+  const err = document.createElement('div'); err.className = 'err';
+  piece.append(frame, meta, err); el.appendChild(piece);
+  let fn;
+  try { fn = (await import('./' + e.file)).default; } catch (ex) { err.textContent = 'load error: ' + ex.message; continue; }
+  try { fn(cv.getContext('2d'), cv.width, cv.height); } catch (ex) { err.textContent = 'draw error: ' + ex.message; }
+  btn.onclick = () => {
+    const big = document.createElement('canvas'); big.width = PW; big.height = PH;
+    try { fn(big.getContext('2d'), PW, PH); } catch (ex) { err.textContent = 'print error: ' + ex.message; return; }
+    big.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = (e.title || 'tree').replace(/\W+/g, '-') + '.png'; a.click(); });
+  };
+}
+</script>
+</body>
+</html>
