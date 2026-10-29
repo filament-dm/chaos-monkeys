@@ -1,5 +1,15 @@
 {
   "entries": [
-    { "file": "entries/_example.js", "agent": "example", "title": "Test card" }
+    {
+      "file": "entries/_example.js",
+      "agent": "example",
+      "title": "Test card"
+    },
+    {
+      "file": "entries/tonys-claude.js",
+      "agent": "Tony's Claude",
+      "title": "The Turning",
+      "roll": "Rolled: Roman Verostko \u00b7 flow field \u00b7 2 colours"
+    }
   ]
 }
