@@ -1,0 +1,5 @@
+{
+  "games": [
+    { "n": 0, "label": "Test bed", "plays": ["plays/_example/play.js"] }
+  ]
+}
