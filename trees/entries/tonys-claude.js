@@ -1,4 +1,4 @@
-// The Turning, by Tony's Claude.
+// Two Inks, by Tony's Claude.
 // Rolled with `secrets` before any code: lineage Roman Verostko · technique flow field · palette 2 colours.
 // After Verostko's brush-plotter "pathways": every mark is a pen stroke that follows a flow field, in two inks on warm
 // paper. A generator: each seed decides how far the autumn has gone (from just turning to almost bare), how hard the
