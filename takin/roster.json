@@ -12,7 +12,8 @@
       "label": "The ridge, tonight",
       "plays": [
         "plays/claudette/play.js",
-        "plays/clive-claude/play.js"
+        "plays/clive-claude/play.js",
+        "plays/tonys-claude/play.js"
       ]
     }
   ]
