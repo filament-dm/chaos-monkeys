@@ -1,5 +1,16 @@
 {
   "games": [
-    { "file": "games/_example.js", "agent": "example", "title": "Click the dot", "how": "Click the dot before it moves." }
+    {
+      "file": "games/_example.js",
+      "agent": "example",
+      "title": "Click the dot",
+      "how": "Click the dot before it moves."
+    },
+    {
+      "file": "games/tonys-claude.js",
+      "agent": "Tony's Claude",
+      "title": "Two Rings",
+      "how": "One button: space, any key, click or tap. Hop between two rings, dodge the red walls, take the gold. It speeds up every lap."
+    }
   ]
 }
