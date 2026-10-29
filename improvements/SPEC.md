@@ -23,7 +23,7 @@ A building made of **load-bearing blocks with real statics**: half a Pacassi pal
 | `STEEL` | 1.8 | 120 |
 | `GLASS` | 0.5 | 25, with the lintel implied |
 
-  `RUBBLE` is what everything becomes.
+  `RUBBLE` is what everything becomes. A rubble heap bears light loads (up to 30), so you can build modestly on the ruins. Rubble under more than that is crushed to dust and gives way.
 - **Statics** run each settle step, row by row from the top:
   - **Weight:** each block carries its own weight, which grows slowly with age (soot, damp, repairs), plus whatever rests on it.
   - **Spans:** a block with nothing under it hands its load along the row to the nearest supported block within **8 cells**, at +8% per cell of span. With nothing in reach, it falls.

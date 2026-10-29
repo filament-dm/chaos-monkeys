@@ -91,13 +91,14 @@ function statics(w) {
   const { mat, load } = w;
   load.fill(0);
   const solid = k => mat[k] && mat[k] !== MAT.RUBBLE;
+  const bears = k => mat[k] !== MAT.AIR;                    // rubble can't be loaded to failure, but you can build on a heap
   for (let y = 0; y < GROUND; y++) {
     const row = y * W;
     // 1. Own weight, plus whatever arrived from above.
     for (let x = 0; x < W; x++) { const k = row + x; if (solid(k)) load[k] += PROPS[mat[k]][1] * (1 + w.age[k] / 900); }
     // 2. Spans: a block with nothing under it hands its load along the row to the nearest supported block
     //    (within 8 cells), carried at a small penalty per cell of span. Nothing within reach: it falls.
-    const supported = x => { const k = row + x; return y + 1 >= GROUND || solid(k + W) || (x > 0 && solid(k + W - 1)) || (x < W - 1 && solid(k + W + 1)); };
+    const supported = x => { const k = row + x; return y + 1 >= GROUND || bears(k + W) || (x > 0 && bears(k + W - 1)) || (x < W - 1 && bears(k + W + 1)); };
     for (let x = 0; x < W; x++) {
       const k = row + x;
       if (!solid(k) || supported(x)) continue;
@@ -118,9 +119,9 @@ function statics(w) {
     for (let x = 0; x < W; x++) {
       const k = row + x;
       if (!solid(k) || y + 1 >= GROUND) continue;
-      const below = solid(k + W) ? [k + W] : [], diag = [];
-      if (x > 0 && solid(k + W - 1)) diag.push(k + W - 1);
-      if (x < W - 1 && solid(k + W + 1)) diag.push(k + W + 1);
+      const below = bears(k + W) ? [k + W] : [], diag = [];
+      if (x > 0 && bears(k + W - 1)) diag.push(k + W - 1);
+      if (x < W - 1 && bears(k + W + 1)) diag.push(k + W + 1);
       if (below.length) { load[below[0]] += load[k] * (diag.length ? 0.7 : 1); for (const d of diag) load[d] += load[k] * 0.3 / diag.length; }
       else for (const d of diag) load[d] += load[k] / diag.length;
     }
@@ -144,6 +145,9 @@ function settle(w, r) {
     }
   }
   for (const k of w.loose) if (mat[k] && mat[k] !== MAT.RUBBLE) { mat[k] = MAT.RUBBLE; changed++; w.collapsed++; }
+  // A rubble heap bears light loads (you can build on the ruins), but rubble under a heavy load is crushed
+  // to dust and gives way, so a wall standing on its own broken base still comes down.
+  for (let k = 0; k < GROUND * W; k++) if (mat[k] === MAT.RUBBLE && load[k] > 30) { mat[k] = MAT.AIR; w.owner[k] = -1; changed++; }
   // Rubble falls and piles.
   for (let y = GROUND - 2; y >= 0; y--) for (let x = 0; x < W; x++) {
     const k = y * W + x;
