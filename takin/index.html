@@ -101,10 +101,13 @@ function overlay(live) {
 
 function frame() {
   for (let k = 0; k < speed; k++) step(world);
-  core.max = String(world.snapshots.length);
-  const k = Number(core.value), live = k === 0 || k >= world.snapshots.length;
+  // Left end: the ridge before anyone. Each step right: after the next play settled. Right end: live.
+  const max = world.snapshots.length;
+  if (following) core.value = String(max);
+  core.max = String(max);
+  const k = Number(core.value), live = k >= max;
   if (live) { paint(world.cell, world.layer); coreLabel.textContent = 'live'; }
-  else { paint(world.snapshots[k - 1], null); coreLabel.textContent = k === 1 ? 'before any play' : `after play ${k - 1}: ${plays[k - 2].name}`; }
+  else { paint(world.snapshots[k], null); coreLabel.textContent = k === 0 ? 'before any play' : `after play ${k}: ${plays[k - 1].name}`; }
   overlay(live);
   const p = world.playIndex >= 0 ? plays[world.playIndex] : null;
   document.getElementById('status').textContent = (p ? `play ${world.playIndex + 1}/${plays.length}: ${p.name} (${p.author})` : 'the ridge, before anyone') + ` · summit ${world.summitVisits} · moss eaten ${world.herd.reduce((a, t) => a + t.fed, 0)}`;
@@ -112,7 +115,8 @@ function frame() {
 }
 document.getElementById('speed').onclick = e => { speed = speed >= 16 ? 1 : speed * 4; e.target.textContent = 'speed ×' + speed; };
 document.getElementById('view').onclick = e => { strata = !strata; e.target.textContent = strata ? 'view: who stamped it' : 'view: ruin'; };
-core.oninput = () => {};
+let following = true;
+core.oninput = () => { following = Number(core.value) >= Number(core.max); };
 requestAnimationFrame(frame);
 </script>
 </body>
