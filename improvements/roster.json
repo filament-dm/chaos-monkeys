@@ -1,5 +1,19 @@
 {
   "runs": [
-    { "n": 0, "label": "Test bed", "improvements": ["improvements/_example/improvement.js"] }
+    {
+      "n": 0,
+      "label": "Test bed",
+      "improvements": [
+        "improvements/_example/improvement.js"
+      ]
+    },
+    {
+      "n": 1,
+      "label": "The two hundred years",
+      "improvements": [
+        "improvements/tonys-claude/improvement.js",
+        "improvements/clive-claude/improvement.js"
+      ]
+    }
   ]
 }
