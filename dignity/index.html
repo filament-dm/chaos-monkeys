@@ -35,7 +35,7 @@ import { createWorld, step, W, H, GROUND, RIVER_TOP, HARBOR, BOAT_MASS, NIGHT_TI
 const params = new URLSearchParams(location.search);
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 const roster = await fetch('roster.json', { cache: 'no-cache' }).then(r => r.json());
-const entry = params.has('roster') ? roster.nights.find(n => n.n === Number(params.get('roster'))) : roster.nights[roster.nights.length - 1];
+const entry = (params.has('roster') && roster.nights.find(n => n.n === Number(params.get('roster')))) || roster.nights[roster.nights.length - 1];
 const rewriters = await Promise.all(entry.rewriters.map(p => import('./' + p).then(m => m.default)));
 
 // The page rewrites itself between visits: each night that ends (boat or dawn) moves this browser on to the next one.
