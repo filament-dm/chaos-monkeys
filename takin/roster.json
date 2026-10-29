@@ -1,5 +1,19 @@
 {
   "games": [
-    { "n": 0, "label": "Test bed", "plays": ["plays/_example/play.js"] }
+    {
+      "n": 0,
+      "label": "Test bed",
+      "plays": [
+        "plays/_example/play.js"
+      ]
+    },
+    {
+      "n": 1,
+      "label": "The ridge, tonight",
+      "plays": [
+        "plays/claudette/play.js",
+        "plays/clive-claude/play.js"
+      ]
+    }
   ]
 }
