@@ -1,5 +1,19 @@
 {
   "tides": [
-    { "n": 0, "label": "Test bed", "tides": ["tides/_example/tide.js"] }
+    {
+      "n": 0,
+      "label": "Test bed",
+      "tides": [
+        "tides/_example/tide.js"
+      ]
+    },
+    {
+      "n": 1,
+      "label": "The Surge against The Refusal",
+      "tides": [
+        "tides/claudette/tide.js",
+        "tides/tonys-claude/tide.js"
+      ]
+    }
   ]
 }
